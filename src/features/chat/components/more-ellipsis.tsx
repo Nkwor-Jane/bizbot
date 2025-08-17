@@ -9,7 +9,7 @@ export default function MoreEllipsis() {
   const [openMore, setOpenMore] = useState<boolean>(false);
 
   return (
-    <div className="relative mt-auto mr-1.5 mb-4 flex flex-col items-end gap-4">
+    <div className="relative mt-auto mr-1.5 mb-4 flex flex-col items-end">
       <AnimatePresence mode="wait">
         {openMore && (
           <motion.div
@@ -56,6 +56,7 @@ const VARIANTS: Variants = {
     width: "100%", // 🎯 Stage 1: Width animates first
     height: "6rem", // 🎯 Stage 2: Height animates second
     padding: "1rem", // 🎯 Stage 3: Padding adds last
+    marginBottom: "1rem",
     opacity: 1,
     transition: {
       width: {
@@ -77,6 +78,7 @@ const VARIANTS: Variants = {
     width: "0rem",
     height: "0rem",
     padding: "0rem",
+    marginBottom: "0rem",
     opacity: 0,
   },
 };

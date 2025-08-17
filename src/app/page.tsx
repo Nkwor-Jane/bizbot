@@ -1,5 +1,5 @@
 import { DynamicIsland } from "@/components/elements";
-import { Chatbox, MoreEllipsis } from "@/features/chat/components";
+import { Chatbox, ChatDialogs, MoreEllipsis } from "@/features/chat/components";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
@@ -14,10 +14,7 @@ export default function Home() {
       >
         <DynamicIsland />
         <div className="flex flex-col gap-6 pt-10">
-          <article>
-            <p>AI Response</p>
-            <p>Sender</p>
-          </article>
+          <ChatDialogs />
           <div className="flex flex-1 flex-col">
             <MoreEllipsis />
             <Chatbox />
