@@ -141,25 +141,34 @@
 
 @layer utilities {
   ::selection {
-    color: white;
-    @apply bg-neutral-900;
+    @apply bg-neutral-900 text-white;
+  }
+  .dark ::selection {
+    @apply bg-neutral-100 text-neutral-900;
   }
 
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background-color: hsl(220, 13%, 13%);
+    background-color: oklch(96.7% 0.001 286.375);
   }
   ::-webkit-scrollbar-thumb {
     border-radius: 100vw;
     background-color: hsl(219, 9%, 45%);
-    border: 2px hsl(220, 13%, 13%) solid;
+    border-left: 6px oklch(96.7% 0.001 286.375) solid;
     transition: all 200ms ease-in-out;
   }
   ::-webkit-scrollbar-thumb:hover {
     cursor: pointer;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background-color: #111113;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    border-left: 6px #111113 solid;
   }
 
   html {

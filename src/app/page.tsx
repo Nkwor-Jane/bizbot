@@ -8,14 +8,14 @@ export default function Home() {
       <section
         className={cn(
           "absolute max-md:inset-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2",
-          "md:max-w-wPhone md:max-h-hPhone bg-phone m-auto grid size-full grid-rows-[1fr] gap-4 md:border p-4 md:rounded-[4rem]",
+          "md:max-w-wPhone md:max-h-hPhone bg-phone m-auto grid size-full grid-rows-[1fr] gap-4 p-4 md:rounded-[3.5rem] md:border",
           "transition-colors duration-300 ease-in",
         )}
       >
         <DynamicIsland />
-        <div className="flex flex-col gap-6 pt-10">
+        <div className="flex flex-1 flex-col pt-10 min-h-0">
           <ChatDialogs />
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-col">
             <MoreEllipsis />
             <Chatbox />
           </div>

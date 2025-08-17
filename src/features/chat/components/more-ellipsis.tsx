@@ -24,7 +24,7 @@ export default function MoreEllipsis() {
               ease: [0.4, 0, 0.2, 1],
             }}
             className={cn(
-              "size-full origin-bottom overflow-hidden rounded-[1.75rem] border-[0.5px] border-lime-500 bg-lime-50 text-lime-700 shadow-sm transition-colors duration-300 ease-in",
+              "size-full absolute bottom-full origin-bottom overflow-hidden rounded-[1.75rem] border-[0.5px] border-lime-500 bg-lime-50 text-lime-700 shadow-sm transition-colors duration-300 ease-in",
               "dark:bg-lime-950 dark:text-lime-50",
             )}
           >

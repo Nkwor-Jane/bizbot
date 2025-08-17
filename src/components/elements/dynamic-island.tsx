@@ -44,7 +44,7 @@ export default function DynamicIsland() {
           ease: [0.4, 0, 0.2, 1],
         }}
         className={cn(
-          "dark:border-border justfy-center flex size-full items-center rounded-[1.75rem] border-[0.5px] border-zinc-900 bg-black px-4 py-3 text-sm text-zinc-50 transition-colors duration-300 ease-in",
+          "dark:border-border justfy-center drop-shadow-2xl flex size-full items-center rounded-[1.75rem] border-[0.5px] border-zinc-900 bg-black px-4 py-3 text-sm text-zinc-50 transition-colors duration-300 ease-in",
           { "border-destructive": isError },
         )}
       >
