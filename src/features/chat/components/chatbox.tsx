@@ -61,7 +61,7 @@ export default function Chatbox() {
     addChatMessage({ text: data.question, sender: "user" });
     setTimeout(
       () => addChatMessage({ text: data.question, sender: "ai" }),
-      4500,
+      5000,
     );
 
     form.reset();
