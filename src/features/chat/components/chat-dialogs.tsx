@@ -9,11 +9,11 @@ export default function ChatDialogs() {
         "[&>p>small]:text-xs",
       )}
     >
-      <p className="text-lime-950">
+      <p className="text-lime-900 dark:text-lime-100">
         <span>AI Response</span>
         <small>17:32pm</small>
       </p>
-      <p className="ml-auto">
+      <p className="ml-auto dark:text-zinc-100">
         <span>Sender</span>
         <small>17:32pm</small>
       </p>

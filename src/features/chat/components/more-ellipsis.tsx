@@ -4,6 +4,7 @@ import { AnimatePresence, motion, Variants } from "motion/react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function MoreEllipsis() {
   const [openMore, setOpenMore] = useState<boolean>(false);
@@ -22,7 +23,10 @@ export default function MoreEllipsis() {
               duration: 0.4,
               ease: [0.4, 0, 0.2, 1],
             }}
-            className="size-full origin-bottom overflow-hidden rounded-[1.75rem] border-[0.5px] border-lime-500 bg-lime-50 text-lime-700 shadow-sm"
+            className={cn(
+              "size-full origin-bottom overflow-hidden rounded-[1.75rem] border-[0.5px] border-lime-500 bg-lime-50 text-lime-700 shadow-sm transition-colors duration-300 ease-in",
+              "dark:bg-lime-950 dark:text-lime-50",
+            )}
           >
             <motion.ul
               variants={LIST_VARIANTS}
