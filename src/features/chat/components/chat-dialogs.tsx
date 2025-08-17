@@ -41,7 +41,7 @@ export default function ChatDialogs() {
                 {
                   "text-lime-700 dark:text-lime-100 [&>small]:text-left": isAI,
                 },
-                { "ml-auto dark:text-zinc-300 [&>small]:ml-auto": isUser },
+                { "ml-auto text-right dark:text-zinc-300 [&>small]:ml-auto": isUser },
               )}
             >
               <span className="block whitespace-pre-wrap">{text}</span>
