@@ -28,7 +28,7 @@ export default function DynamicIsland() {
         animate={isError ? "vibrate" : "initial"}
         onClick={() => (notification ? setExpand((prev) => !prev) : {})}
         className={cn(
-          "grid size-8 place-content-center rounded-full border bg-lime-300 text-xs font-bold text-zinc-700 transition-colors duration-300 ease-in-out dark:bg-lime-300",
+          "grid size-8 place-content-center rounded-full border bg-lime-300 text-xs font-bold text-zinc-700 transition-colors duration-300 ease-in-out",
           { "bg-red-500 text-white": isError },
         )}
       >
