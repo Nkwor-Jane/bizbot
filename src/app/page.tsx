@@ -1,7 +1,5 @@
-import { Ellipsis } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Chatbox, DynamicIsland } from "@/features/chat/components";
+import { DynamicIsland } from "@/components/elements";
+import { Chatbox, MoreEllipsis } from "@/features/chat/components";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
@@ -15,16 +13,13 @@ export default function Home() {
         )}
       >
         <DynamicIsland />
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 pt-10">
+          <article>
+            <p>AI Response</p>
+            <p>Sender</p>
+          </article>
           <div className="flex flex-1 flex-col">
-            <Button
-              size={"icon"}
-              variant={"outline"}
-              className="hover:bg-background/90 mt-auto mr-1.5 mb-4 ml-auto size-[2.875rem]"
-            >
-              <Ellipsis />
-            </Button>
-
+            <MoreEllipsis />
             <Chatbox />
           </div>
           <div className="mx-auto h-2 w-40 rounded-full border bg-black" />

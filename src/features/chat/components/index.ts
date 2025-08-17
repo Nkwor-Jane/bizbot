@@ -1,2 +1,2 @@
 export { default as Chatbox } from "./chatbox";
-export { default as DynamicIsland } from "./dynamic-island";
+export { default as MoreEllipsis } from "./more-ellipsis";
