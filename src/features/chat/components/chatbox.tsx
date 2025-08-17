@@ -13,7 +13,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  // FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useNotifications } from "@/provider/notifications";
@@ -31,7 +31,7 @@ const FormSchema = z.object({
 });
 
 export default function Chatbox() {
-  const { addNotification } = useNotifications();
+  const { addNotification, removeNotification } = useNotifications();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -44,19 +44,24 @@ export default function Chatbox() {
         message: form.formState.errors.question.message,
         type: "error",
       });
-      console.log(form.formState.errors.question);
+      // console.log(form.formState.errors.question);
+    } else {
+      removeNotification();
     }
   }, [form.formState.errors.question?.message]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     addNotification({ message: "Analyzing", type: "loading" });
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    setTimeout(removeNotification, 5000);
+    
+    console.log(data);
+    // toast("You submitted the following values", {
+    //   description: (
+    //     <pre className="mt-2 rounded-md bg-neutral-950 p-4">
+    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // });
   }
 
   return (
@@ -67,7 +72,7 @@ export default function Chatbox() {
           name="question"
           render={({ field }) => (
             <FormItem>
-              <FormMessage className="text-center" />
+              {/* <FormMessage className="text-center" /> */}
               <FormLabel className="sr-only">Question</FormLabel>
               <FormControl>
                 <Textarea
