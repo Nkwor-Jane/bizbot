@@ -8,7 +8,7 @@ export default function Home() {
       <section
         className={cn(
           "absolute max-md:inset-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2",
-          "md:max-w-wPhone md:max-h-hPhone bg-phone m-auto grid size-full grid-rows-[1fr] gap-4 border p-4 md:rounded-[4rem]",
+          "md:max-w-wPhone md:max-h-hPhone bg-phone m-auto grid size-full grid-rows-[1fr] gap-4 md:border p-4 md:rounded-[4rem]",
           "transition-colors duration-300 ease-in",
         )}
       >
