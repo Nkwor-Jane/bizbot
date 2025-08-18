@@ -13,13 +13,16 @@ export default function Home() {
         )}
       >
         <DynamicIsland />
-        <div className="flex flex-1 flex-col pt-10 min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col pt-10">
           <ChatDialogs />
           <div className="flex flex-col">
             <MoreEllipsis />
             <Chatbox />
           </div>
-          <div className="mx-auto h-2 w-40 rounded-full border bg-black" />
+          <div
+            aria-hidden
+            className="mx-auto mt-4 h-2 w-40 rounded-full border bg-black"
+          />
         </div>
       </section>
     </main>

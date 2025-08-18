@@ -10,7 +10,7 @@ export default function MoreEllipsis() {
   const [openMore, setOpenMore] = useState<boolean>(false);
 
   return (
-    <div className="relative mt-auto mr-1.5 mb-4 flex flex-col items-end">
+    <div className="relative mr-1.5 mb-4 flex flex-col items-end">
       <AnimatePresence mode="wait">
         {openMore && (
           <motion.div
@@ -24,7 +24,7 @@ export default function MoreEllipsis() {
               ease: [0.4, 0, 0.2, 1],
             }}
             className={cn(
-              "size-full absolute bottom-full origin-bottom overflow-hidden rounded-[1.75rem] border-[0.5px] border-lime-500 bg-lime-50 text-lime-700 shadow-sm transition-colors duration-300 ease-in",
+              "no-scrollbar absolute right-[3.875rem] size-full max-w-[calc(100%-3.875rem)] origin-[right_center] overflow-hidden overflow-x-auto rounded-[1.75rem] border-[0.5px] border-lime-500 bg-lime-50 text-lime-700 shadow-sm transition-colors duration-300 ease-in",
               "dark:bg-lime-950 dark:text-lime-50",
             )}
           >
@@ -32,10 +32,25 @@ export default function MoreEllipsis() {
               variants={LIST_VARIANTS}
               initial="hidden"
               animate="visible"
-              className="flex flex-wrap gap-2"
+              className="flex w-fit items-center"
             >
-              {["Tip 1", "Tip 2", ""].map((tip) => (
-                <motion.li key={tip} variants={ITEM_VARIANTS} className="">
+              {[
+                "Item 1",
+                "Item 2",
+                "Item 3",
+                "Item 4",
+                "Item 5",
+                "Item 6",
+                "Item 7",
+                "Item 8",
+                "Item 9",
+                "Item 10",
+              ].map((tip) => (
+                <motion.li
+                  key={tip}
+                  variants={ITEM_VARIANTS}
+                  className="shrink-0 px-3"
+                >
                   {tip}
                 </motion.li>
               ))}
@@ -58,8 +73,9 @@ export default function MoreEllipsis() {
 const VARIANTS: Variants = {
   open: {
     width: "100%", // 🎯 Stage 1: Width animates first
-    height: "6rem", // 🎯 Stage 2: Height animates second
-    padding: "1rem", // 🎯 Stage 3: Padding adds last
+    // height: "2.875rem",
+    scaleY: 1, // 🎯 Stage 2: Scale animates second
+    padding: "0.675rem", // 🎯 Stage 3: Padding adds last
     marginBottom: "1rem",
     opacity: 1,
     transition: {
@@ -68,7 +84,7 @@ const VARIANTS: Variants = {
         delay: 0.2, // ⏰ Starts after height
         ease: [0.4, 0, 0.2, 1],
       },
-      height: {
+      scaleY: {
         duration: 0.3,
         ease: [0.4, 0, 0.2, 1],
       },
@@ -80,10 +96,16 @@ const VARIANTS: Variants = {
   },
   closed: {
     width: "0rem",
-    height: "0rem",
+    // height: "0rem",
+    scaleY: 0,
     padding: "0rem",
     marginBottom: "0rem",
     opacity: 0,
+    transition: {
+      scaleY: {
+        delay: 0.3,
+      },
+    },
   },
 };
 
