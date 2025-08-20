@@ -7,7 +7,9 @@ An AI-powered chatbot designed to help Nigerian entrepreneurs and businesses nav
 BizBot Nigeria leverages Retrieval Augmented Generation (RAG) technology to provide accurate, context-aware answers to common business questions in Nigeria. Whether you're starting a new business, dealing with tax compliance, or understanding trade regulations, BizBot is your intelligent assistant.
 
 ### Problem Statement
+
 Nigerian entrepreneurs often struggle with:
+
 - Complex business registration processes
 - Understanding tax obligations and procedures
 - Navigating trade regulations and requirements
@@ -15,7 +17,9 @@ Nigerian entrepreneurs often struggle with:
 - Language barriers in official documentation
 
 ### Solution
+
 An AI chatbot that:
+
 - Provides instant answers to business-related questions
 - Uses official government sources and reliable business information
 - Understands Nigerian business context and terminology
