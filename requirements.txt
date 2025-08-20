@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+streamlit
+langchain
+langchain-community
+faiss-cpu
+transformers
+sentence-transformers
+PyPDF2
+PyMuPDF
+python-multipart
+requests
+sqlalchemy 
+psycopg2-binary 
+python-dotenv 
+alembic
+langchain-openai
