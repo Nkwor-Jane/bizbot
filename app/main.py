@@ -30,7 +30,7 @@ async def chat_endpoint(request: ChatRequest):
         if not request.session_id:
             request.session_id = str(uuid.uuid4())
 
-	           # Handle Greetings before RAG Query
+        # Handle Greetings before RAG Query
         greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"]
         if request.message.lower() in greetings:
             answer = "Hello 👋, welcome to BizBot Nigeria! How can I help you today?"
