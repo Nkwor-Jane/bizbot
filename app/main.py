@@ -30,6 +30,28 @@ async def chat_endpoint(request: ChatRequest):
         if not request.session_id:
             request.session_id = str(uuid.uuid4())
 
+	# Handle Greetings before RAG Query
+	greeting = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"]
+	if request.message.lower() in greetings:
+            answer = "Hello 👋, welcome to BizBot Nigeria! How can I help you today?"
+            sources = []
+            confidence = None
+
+	# Save conversation into DB
+	db.save_conversation(
+            session_id=request.session_id,
+            user_message=request.message,
+            bot_response=answer,
+            confidence_score=confidence,
+            sources_used=None
+        )
+
+	return ChatResponse(
+            response=answer,
+            session_id=request.session_id,
+            sources=sources
+        )
+
         # Query RAG pipeline
         result = rag.query(request.message)
         logger.info(f"RAG result: {result}")
