@@ -103,5 +103,65 @@
         "question": "How can I obtain an import license in Nigeria?",
         "answer": "To obtain an import license, you must register with the Federal Ministry of Finance, provide company registration details, and comply with Nigerian Customs requirements.",
         "source": "https://customs.gov.ng/"
+    },
+    {
+        "question": "What are the import duties and taxes applicable in Nigeria?",
+        "answer": "Import duties in Nigeria vary based on the type of goods being imported. Common rates include 5%, 10%, and 20%. Additionally, VAT at 7.5% is applied to most imports.",
+        "source": "https://customs.gov.ng/"
+    },
+    {
+        "question": "How do I track my shipment with NCS?",
+        "answer": "You can track your shipment by visiting the NCS website and using their tracking tool, or by contacting their customer service for assistance.",
+        "source": "https://customs.gov.ng/"
+    },
+    {
+        "question": "What is the process for registering for PAYE in Nigeria?",
+        "answer": "To register for PAYE, employers must register with the FIRS, obtain a TIN, and submit employee details for tax deduction purposes.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "How often do I need to file VAT returns in Nigeria?",
+        "answer": "VAT returns must be filed monthly, and payments are due by the 21st day of the following month.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What are the penalties for late payment of taxes in Nigeria?",
+        "answer": "Penalties for late payment of taxes can include fines, interest on the overdue amount, and potential legal action by the FIRS.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "How do I update my business information with CAC?",
+        "answer": "To update your business information, you must either be an accredited agent or consult an accredited agent to carry out the changes for you.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the turnaround time for business name registration in Nigeria?",
+        "answer": "Since the AI implementation on the crp portal, the average turnaround time for business name registration in Nigeria is typically 24 to 48 hours after submission of all required documents and payment.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the turnaround time for company registration in Nigeria?",
+        "answer": "Since the AI implementation on the crp portal, the average turnaround time for company registration in Nigeria is typically 24 to 48 hours after submission of all required documents and payment.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the turnaround time for NGO registration in Nigeria?",
+        "answer": "Since the AI implementation on the crp portal, the average turnaround time for NGO registration in Nigeria is typically 24 to 72 hours after submission of all required documents and payment.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "How do I contact CAC customer support?",
+        "answer": "You can contact CAC customer support through their official website, email (helpdesk@cac.gov.ng), or by visiting their offices.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "How do I contact FIRS customer support?",
+        "answer": "You can contact FIRS customer support through their official website, email (helpdesk@firs.gov.ng), call 020 9460 2700 (Local) +234 (0) 209 460 2700 (International) or by visiting their offices.",
+        "source": "https://www.firs.gov.ng"
+    },
+    {
+        "question": "How do I contact NCS customer support?",
+        "answer": "You can contact NCS customer support through their official website, email (helpdesk@ncs.gov.ng), or by visiting their offices.",
+        "source": "https://www.ncs.gov.ng"
     }
 ]
