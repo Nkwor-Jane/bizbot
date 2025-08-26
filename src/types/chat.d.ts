@@ -6,3 +6,7 @@ interface ChatMessage {
   loading?: boolean;
   detectedLanguage?: string;
 }
+
+interface ChatPost {
+  message: string;
+}

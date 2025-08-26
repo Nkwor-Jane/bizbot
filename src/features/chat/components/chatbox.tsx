@@ -19,20 +19,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useNotifications } from "@/provider/notifications";
 
 import { useChat } from "../context";
+import { usePostChat } from "../hook";
 
 const FormSchema = z.object({
   question: z
     .string("Bio is required.")
     .min(10, {
-      message: "Bio must be at least 10 characters.",
+      message: "Question must be at least 10 characters.",
     })
     .max(160, {
-      message: "Bio must not be longer than 30 characters.",
+      message: "Question must not be longer than 30 characters.",
     }),
 });
 
 export default function Chatbox() {
   const { addChatMessage } = useChat();
+  const { mutateAsync: postChat, isPending } = usePostChat();
   const { addNotification, removeNotification } = useNotifications();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -41,6 +43,7 @@ export default function Chatbox() {
     mode: "onBlur",
   });
 
+  // If there is an error, show it as a notification
   useEffect(() => {
     if (form.formState.errors.question?.message) {
       addNotification({
@@ -52,19 +55,19 @@ export default function Chatbox() {
     }
   }, [form.formState.errors.question?.message]);
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    // Simulate analzying notifcation
-    addNotification({ message: "Analyzing", type: "loading" });
-    setTimeout(removeNotification, 5000);
-
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     // Add User's message to the chat context
     addChatMessage({ text: data.question, sender: "user" });
-    setTimeout(
-      () => addChatMessage({ text: data.question, sender: "ai" }),
-      5000,
-    );
+
+    const { response, session_id, sources } = await postChat({
+      message: data.question,
+    });
+
+    // Add AI's message to the chat context
+    addChatMessage({ text: response, sender: "ai" });
 
     form.reset();
+    console.log("Post Chat Response: ", { response, session_id, sources });
   }
 
   return (
@@ -90,6 +93,7 @@ export default function Chatbox() {
         <Button
           type="submit"
           size={"icon"}
+          disabled={isPending}
           className="absolute right-3 bottom-3 size-10"
         >
           <Send />
