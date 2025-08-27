@@ -56,6 +56,7 @@ interface ChatContextProps {
   addChatMessage: (args: {
     text: ChatMessage["text"];
     sender: ChatMessage["sender"];
+    sources?: ChatMessage["sources"];
   }) => void;
 }
 
@@ -71,15 +72,18 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const addChatMessage = ({
     text,
     sender,
+    sources,
   }: {
     text: ChatMessage["text"];
     sender: ChatMessage["sender"];
+    sources?: ChatMessage["sources"];
   }) => {
     const message: ChatMessage = {
       id: uuidv4(),
       text,
       sender,
       timestamp: Date.now(),
+      sources,
       // detectedLanguage: sourceLanguage,
     };
 

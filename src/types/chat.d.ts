@@ -3,7 +3,7 @@ interface ChatMessage {
   text: string;
   sender: "user" | "ai";
   timestamp: number;
-  loading?: boolean;
+  sources?: { excerpt: string; source: string }[];
   detectedLanguage?: string;
 }
 

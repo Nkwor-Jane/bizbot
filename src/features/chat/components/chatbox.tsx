@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Send } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
@@ -63,10 +62,11 @@ export default function Chatbox() {
       message: data.question,
     });
 
-    // Add AI's message to the chat context
-    addChatMessage({ text: response, sender: "ai" });
-
     form.reset();
+
+    // Add AI's message to the chat context
+    addChatMessage({ text: response, sender: "ai", sources });
+
     console.log("Post Chat Response: ", { response, session_id, sources });
   }
 

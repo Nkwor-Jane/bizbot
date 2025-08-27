@@ -1,4 +1,4 @@
-import { DynamicIsland } from "@/components/elements";
+import { DynamicIsland, HistorySheet } from "@/components/elements";
 import { Chatbox, ChatDialogs, MoreEllipsis } from "@/features/chat/components";
 import { cn } from "@/lib/utils";
 
@@ -19,10 +19,7 @@ export default function Home() {
             <MoreEllipsis />
             <Chatbox />
           </div>
-          <div
-            aria-hidden
-            className="mx-auto mt-4 h-2 w-40 rounded-full border bg-black"
-          />
+          <HistorySheet />
         </div>
       </section>
     </main>
