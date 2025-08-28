@@ -151,7 +151,7 @@
     },
     {
         "question": "How do I contact CAC customer support?",
-        "answer": "You can contact CAC customer support through their official website, email (helpdesk@cac.gov.ng), or by visiting their offices.",
+        "answer": "You can contact CAC customer support through their official website, email (helpdesk@cac.gov.ng), call 07080629000, or by visiting their offices.",
         "source": "https://www.cac.gov.ng"
     },
     {
@@ -163,5 +163,30 @@
         "question": "How do I contact NCS customer support?",
         "answer": "You can contact NCS customer support through their official website, email (helpdesk@ncs.gov.ng), or by visiting their offices.",
         "source": "https://www.ncs.gov.ng"
+    },
+    {
+        "question": "The AI is not accepting my ID card, what should I do?",
+        "answer": "To ensure your ID card is accepted by the AI, make sure that the image is clear, well-lit, and all details are visible. If the issue persists, try using a different ID card such as the long NIN slip.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "Can I use my phone to register my business?",
+        "answer": "Yes, you can use your phone to register your business as long as you have a stable internet connection and access to the required documents in digital format. Also ensure to put your phone on desktop view for a good user experience",
+        "source": "CAC Registration Expert"
+    },
+    {
+        "question": "What internet browser is best for registering my business?",
+        "answer": "For the best experience when registering your business, it is recommended to use Google Chrome or Mozilla Firefox as they are compatible with most online registration portals.",
+        "source": "Google"
+    },
+    {
+        "question": "Can I register my business on weekends or public holidays?",
+        "answer": "Yes, you can register your business on weekends or public holidays as the online registration portals are available 24/7. However, processing times may vary depending on the day and time of submission. Approval of applications submitted on weekends might be delayed till the begining of the new week if it require human interference",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What should I do if I encounter technical issues during the registration process?",
+        "answer": "If you encounter technical issues during the registration process, try refreshing the page, clearing your browser cache, or using a different browser. If the problem persists, contact customer support for assistance.",
+        "source": "https://www.cac.gov.ng"
     }
 ]
