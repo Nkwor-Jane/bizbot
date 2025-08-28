@@ -1,11 +1,15 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import List, Optional
+
+class Source(BaseModel):
+    source: str
+    excerpt: str
 
 class ChatRequest(BaseModel):
     message: str
-    session_id: str = None
+    session_id: Optional[str] = None
 
 class ChatResponse(BaseModel):
     response: str
     session_id: str
-    sources: Optional[List[dict]] = None
+    sources: List[Source] = []

@@ -3,6 +3,9 @@ import time
 import logging
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
+import json
+import pymupdf
+
 
 # LangChain imports
 from langchain_community.document_loaders import TextLoader
@@ -10,11 +13,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks.manager import get_openai_callback
 from langchain.embeddings.base import Embeddings
 from openai import OpenAI
 from langchain_community.document_loaders import PyPDFLoader, PyMuPDFLoader, PDFMinerLoader
-import pymupdf
+from langchain.schema import Document
 
 load_dotenv()
 
@@ -68,6 +71,37 @@ class ImprovedPDFLoader:
         
         logger.error("All PDF loading methods failed")
         return []
+
+class JSONLoader:
+    """Load structured Q&A pairs from JSON into LangChain Documents"""
+
+    @staticmethod
+    def load_json(file_path: str):
+        if not os.path.exists(file_path):
+            logger.error(f"JSON file not found: {file_path}")
+            return []
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            documents = []
+            for item in data:
+                question = item.get("question", "")
+                answer = item.get("answer", "")
+                source = item.get("source", "Nigerian Business Dataset")
+
+                # Treat each Q/A pair as one document
+                page_content = f"Question: {question}\nAnswer: {answer}"
+                documents.append(Document(page_content=page_content, metadata={"source": source}))
+
+            logger.info(f"Loaded {len(documents)} Q&A pairs from JSON")
+            return documents
+
+        except Exception as e:
+            logger.error(f"Error loading JSON: {e}")
+            return []
+
 
 class NebiusEmbeddings(Embeddings):
     def __init__(self, api_key: str, model: str = "BAAI/bge-multilingual-gemma2"):
@@ -161,6 +195,7 @@ class RAGPipeline:
         self.qa_chain = None
         self.query_count = 0
         self.total_cost = 0.0
+        self.kb_type = None 
         
         logger.info("Nebius AI Studio initialized with Meta-Llama-3.1-8B-Instruct")
         
@@ -186,6 +221,26 @@ Question: {question}
 
 <|start_header_id|>assistant<|end_header_id|>"""
 
+        self.prompt_template_json = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+You are BizBot Nigeria, an AI assistant specializing in Nigerian business regulations and procedures.
+
+Guidelines when using a structured Q&A knowledge base:
+- Prefer giving the exact **answer text** from the dataset whenever possible
+- Do not invent information that is not in the dataset
+- If multiple relevant answers exist, summarize them clearly
+- If no answer exists, say: "This information is not available in my current knowledge base"
+- Always cite the source(s) if available
+<|eot_id|>
+
+<|start_header_id|>user<|end_header_id|>
+Knowledge base context:
+{context}
+
+Question: {question}
+<|eot_id|>
+
+<|start_header_id|>assistant<|end_header_id|>"""
+
 
     # -------------------------------
     # Knowledge Base Setup
@@ -196,13 +251,19 @@ Question: {question}
         try:
             start_time = time.time()
             
-            # Load documents
-            if os.path.exists(documents_path):
-                documents = ImprovedPDFLoader.load_pdf(r"docs\Nigerian Business FAQs.pdf", preferred_method="pymupdf")
-                logger.info(f"Loaded documents from {documents_path}")
+            # Load from JSON if file is .json
+            if documents_path.endswith(".json"):
+                documents = JSONLoader.load_json(documents_path)
+                self.kb_type = "json"
+            elif documents_path.endswith(".pdf"):
+                documents = ImprovedPDFLoader.load_pdf(documents_path, preferred_method="pymupdf")
+                self.kb_type = "pdf"
             else:
+                raise ValueError("Unsupported file type. Use .pdf or .json")
+
+            # Fallback if no docs
+            if not documents:
                 documents = self._create_nigerian_business_data()
-                logger.info("Using comprehensive sample Nigerian business data")
             
             # Text splitting
             text_splitter = RecursiveCharacterTextSplitter(
@@ -223,10 +284,18 @@ Question: {question}
             self.vector_store.save_local(vector_store_path)
             
             # Setup QA chain
-            prompt = PromptTemplate(
-                template=self.prompt_template,
-                input_variables=["context", "question"]
-            )
+            # Select prompt based on data source
+            if documents_path.endswith(".json"):
+                prompt = PromptTemplate(
+                    template=self.prompt_template_json,
+                    input_variables=["context", "question"]
+                )
+            else:
+                prompt = PromptTemplate(
+                    template=self.prompt_template,
+                    input_variables=["context", "question"]
+                )
+
             
             self.qa_chain = RetrievalQA.from_chain_type(
                 llm=self.llm,
@@ -246,72 +315,222 @@ Question: {question}
             logger.error(f"Setup error: {e}")
             raise e
 
+    
+    def classify_query_type(self, question: str) -> str:
+        """Classify query type: business, greeting, or other"""
+        question_lower = question.lower().strip()
+        
+        # Nigerian language greetings
+        yoruba_greetings = [
+            'bawo', 'bawo ni', 'se daada ni', 'pele', 'e kaaro', 'e kaasan', 'e kaalẹ',
+            'ẹ ku aaro', 'ẹ ku ọsan', 'ẹ ku alẹ', 'se alafia ni'
+        ]
+        
+        igbo_greetings = [
+            'ndewo', 'kedu', 'kedu ka i mere', 'nno', 'nnukwu ndewo',
+            'ụtụtụ ọma', 'ehihie ọma', 'mgbede ọma'
+        ]
+        
+        hausa_greetings = [
+            'sannu', 'ina kwana', 'ina gari', 'barka da safiya',
+            'barka da rana', 'barka da yamma', 'kana lafiya'
+        ]
+        
+        english_greetings = [
+            'hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening',
+            'how are you', 'whats up', 'greetings', 'nice to meet you'
+        ]
+        
+        # Business-related keywords
+        business_keywords = [
+            'business', 'company', 'register', 'registration', 'cac', 'firs', 'tax',
+            'license', 'permit', 'bank', 'account', 'incorporation', 'fee', 'cost',
+            'document', 'requirement', 'process', 'step', 'how to', 'procedure'
+        ]
+        
+        # Check for greetings
+        all_greetings = yoruba_greetings + igbo_greetings + hausa_greetings + english_greetings
+        if any(greeting in question_lower for greeting in all_greetings):
+            return "greeting"
+        
+        # Check for business queries
+        if any(keyword in question_lower for keyword in business_keywords):
+            return "business"
+        
+        return "other"
+
+    def handle_greeting(self, question: str) -> Dict:
+        """Handle greetings in multiple Nigerian languages"""
+        question_lower = question.lower().strip()
+        
+        # Determine language and respond appropriately
+        if any(word in question_lower for word in ['bawo', 'se daada', 'pele', 'kaaro', 'kaasan']):
+            # Yoruba greeting
+            response = """Ẹ ku aaro! (Good morning!) / Ẹ ku ọsan! (Good afternoon!)
+
+    Mo jẹ́ BizBot Nigeria - oluranlowo ti o le ran yin lowo pelu awon ibeere nipa eto isowo ni Nigeria.
+
+    I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
+
+    How can I help you with your business needs today?"""
+            
+        elif any(word in question_lower for word in ['ndewo', 'kedu', 'nno', 'ụtụtụ']):
+            # Igbo greeting  
+            response = """Ndewo! Kedu ka ị mere?
+
+    Abụ m BizBot Nigeria - onye inyeaka nke nwere ike inyere gị aka na ajụjụ gbasara usoro azụmahịa na Nigeria.
+
+    I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
+
+    How can I help you with your business needs today?"""
+            
+        elif any(word in question_lower for word in ['sannu', 'ina kwana', 'ina gari', 'barka']):
+            # Hausa greeting
+            response = """Sannu! Ina gari?
+
+    Ni ne BizBot Nigeria - mataimaki da zai iya taimaka muku da tambayoyi game da hanyoyin kasuwanci a Nigeria.
+
+    I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
+
+    How can I help you with your business needs today?"""
+            
+        else:
+            # English greeting
+            response = """Hello! How are you doing?
+
+    I am BizBot Nigeria - your AI assistant for Nigerian business regulations and procedures.
+
+    I can help you with:
+    • Company registration with CAC
+    • Tax requirements with FIRS  
+    • Banking procedures
+    • Business licenses and permits
+    • Regulatory compliance
+
+    What business question can I help you with today?"""
+        
+        return {
+            "answer": response,
+            "sources": [],
+            "confidence": "high",
+            "confidence_score": 1.0,
+            "cost": 0.0,
+            "response_time": 0.01
+        }
+
+    def handle_non_business_query(self, question: str) -> Dict:
+        """Handle non-business queries politely"""
+        return {
+            "answer": """I'm BizBot Nigeria, specialized in helping with Nigerian business regulations and procedures.
+
+    I can assist you with:
+    • Company and business name registration
+    • Tax obligations and FIRS requirements
+    • Banking and financial procedures  
+    • Business licenses and permits
+    • CAC processes and requirements
+
+    Please ask me a question about Nigerian business procedures, and I'll be happy to help!""",
+            
+            "sources": [],
+            "confidence": "high", 
+            "confidence_score": 1.0,
+            "cost": 0.0,
+            "response_time": 0.01
+        }
+
     def query(self, question: str) -> Dict:
-        """Query the Nigerian business knowledge base"""
+        """Hybrid query: JSON direct answers when confident, otherwise LLM QA."""
+
+        # First classify the query type
+        query_type = self.classify_query_type(question)
+        
+        if query_type == "greeting":
+            return self.handle_greeting(question)
+        elif query_type == "other":
+            return self.handle_non_business_query(question)
+    
+        # --------------------------
+        # JSON Knowledge Base Mode
+        # --------------------------
+        if self.kb_type == "json" and self.vector_store:
+            # Retrieve top matches
+            docs = self.vector_store.similarity_search_with_score(question, k=2)
+
+            if docs:
+                best_doc, score = docs[0]  # doc + similarity score
+                logger.info(f"JSON similarity score: {score:.4f}")
+
+                # Threshold: if similarity high, trust JSON
+                if score > 0.7:
+                    return {
+                        "answer": best_doc.page_content.split("Answer:")[-1].strip(),
+                        "sources": [best_doc.metadata.get("source", "Nigerian Business Dataset")],
+                        "confidence": "high",
+                        "confidence_score": round(score, 2),
+                        "cost": 0.0,
+                        "response_time": 0.01
+                    }
+
+                # Otherwise → fall back to LLM
+                logger.info("Low similarity, falling back to LLM chain...")
+
+        # --------------------------
+        # PDF/Text Knowledge Base Mode
+        # --------------------------
         if not self.qa_chain:
             return {
-                 "answer": "Knowledge base not initialized. Please contact support.",
+                "answer": "Knowledge base not initialized. Please contact support.",
                 "sources": [],
                 "confidence": "low",
                 "cost": 0.0,
                 "response_time": 0.0
             }
-            
+
+        # LLM QA chain (works for both PDF or JSON fallback)
         start_time = time.time()
         self.query_count += 1
-            
+
         try:
-            # Process query and track cost
             with get_openai_callback() as cb:
                 result = self.qa_chain({"query": question})
                 query_cost = cb.total_cost
                 self.total_cost += query_cost
-                
-            # Extract and process sources
+
+            # Extract sources
             sources = []
             confidence_score = 0.0
-                
-            if 'source_documents' in result:
+            if "source_documents" in result:
                 sources = [
                     {
-                        "source": doc.metadata.get('source', 'Nigerian Business Database'),
+                        "source": doc.metadata.get("source", "Nigerian Business Database"),
                         "excerpt": doc.page_content[:120] + "..."
                     }
-                    for doc in result['source_documents']
+                    for doc in result["source_documents"]
                 ]
-                    
-                # Calculate confidence based on content relevance
-                confidence_score = self._calculate_confidence(result['source_documents'], question)
-                
+                confidence_score = self._calculate_confidence(result["source_documents"], question)
+
             response_time = time.time() - start_time
-                
-            # Log query metrics
-            logger.info(
-                f"Query #{self.query_count} | "
-                f"Time: {response_time:.2f}s | "
-                f"Cost: ${query_cost:.4f} | "
-                f"Confidence: {self._get_confidence_level(confidence_score)}"
-            )
-                
+
             return {
-                "answer": result['result'],
+                "answer": result["result"],
                 "sources": sources,
                 "confidence": self._get_confidence_level(confidence_score),
                 "confidence_score": round(confidence_score, 2),
                 "cost": round(query_cost, 4),
                 "response_time": round(response_time, 2)
             }
-                
+
         except Exception as e:
             logger.error(f"Query error: {e}")
             return {
-                "answer": f"I encountered an error processing your question. Please try again or rephrase your question. Error: {str(e)}",
+                "answer": f"I encountered an error processing your question. Please try again. Error: {str(e)}",
                 "sources": [],
                 "confidence": "low",
                 "cost": 0.0,
                 "response_time": 0.0
             }
-    
+
     def batch_query(self, questions: List[str]) -> List[Dict]:
         """Process multiple queries efficiently"""
         results = []
@@ -418,7 +637,7 @@ Question: {question}
             "provider": "Nebius AI Studio",
             "status": "active"
         }
-
+    
     def _create_nigerian_business_data(self):
         """Comprehensive Nigerian business knowledge base"""
         from langchain.schema import Document

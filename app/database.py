@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, Text, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.sql import func
 from typing import Generator
@@ -83,7 +83,8 @@ class ChatDatabase:
                 session_id=session_id,
                 user_message=user_message,
                 bot_response=bot_response,
-                confidence_score=confidence_score,
+                # confidence_score=confidence_score,
+                confidence_score=str(confidence_score) if confidence_score is not None else None,
                 sources_used=sources_used
             )
             db.add(message)
