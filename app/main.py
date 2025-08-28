@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from .rag_pipeline import RAGPipeline
 from .database import ChatDatabase
@@ -7,6 +8,15 @@ import uuid
 import logging
 
 app = FastAPI(title="BizBot Nigeria API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 logger = logging.getLogger("uvicorn.error")
 
