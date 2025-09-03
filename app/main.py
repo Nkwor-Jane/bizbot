@@ -12,6 +12,15 @@ from deep_translator import GoogleTranslator
 
 
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 logger = logging.getLogger("uvicorn.error")
 
 # Initialize components

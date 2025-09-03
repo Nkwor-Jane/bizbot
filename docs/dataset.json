@@ -103,5 +103,315 @@
         "question": "How can I obtain an import license in Nigeria?",
         "answer": "To obtain an import license, you must register with the Federal Ministry of Finance, provide company registration details, and comply with Nigerian Customs requirements.",
         "source": "https://customs.gov.ng/"
+    },
+    {
+        "question": "What are the import duties and taxes applicable in Nigeria?",
+        "answer": "Import duties in Nigeria vary based on the type of goods being imported. Common rates include 5%, 10%, and 20%. Additionally, VAT at 7.5% is applied to most imports.",
+        "source": "https://customs.gov.ng/"
+    },
+    {
+        "question": "How do I track my shipment with NCS?",
+        "answer": "You can track your shipment by visiting the NCS website and using their tracking tool, or by contacting their customer service for assistance.",
+        "source": "https://customs.gov.ng/"
+    },
+    {
+        "question": "What is the process for registering for PAYE in Nigeria?",
+        "answer": "To register for PAYE, employers must register with the FIRS, obtain a TIN, and submit employee details for tax deduction purposes.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "How often do I need to file VAT returns in Nigeria?",
+        "answer": "VAT returns must be filed monthly, and payments are due by the 21st day of the following month.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What are the penalties for late payment of taxes in Nigeria?",
+        "answer": "Penalties for late payment of taxes can include fines, interest on the overdue amount, and potential legal action by the FIRS.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "How do I update my business information with CAC?",
+        "answer": "To update your business information, you must either be an accredited agent or consult an accredited agent to carry out the changes for you.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the turnaround time for business name registration in Nigeria?",
+        "answer": "Since the AI implementation on the crp portal, the average turnaround time for business name registration in Nigeria is typically 24 to 48 hours after submission of all required documents and payment.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the turnaround time for company registration in Nigeria?",
+        "answer": "Since the AI implementation on the crp portal, the average turnaround time for company registration in Nigeria is typically 24 to 48 hours after submission of all required documents and payment.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the turnaround time for NGO registration in Nigeria?",
+        "answer": "Since the AI implementation on the crp portal, the average turnaround time for NGO registration in Nigeria is typically 24 to 72 hours after submission of all required documents and payment.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "How do I contact CAC customer support?",
+        "answer": "You can contact CAC customer support through their official website, email (helpdesk@cac.gov.ng), call 07080629000, or by visiting their offices.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "How do I contact FIRS customer support?",
+        "answer": "You can contact FIRS customer support through their official website, email (helpdesk@firs.gov.ng), call 020 9460 2700 (Local) +234 (0) 209 460 2700 (International) or by visiting their offices.",
+        "source": "https://www.firs.gov.ng"
+    },
+    {
+        "question": "How do I contact NCS customer support?",
+        "answer": "You can contact NCS customer support through their official website, email (helpdesk@ncs.gov.ng), or by visiting their offices.",
+        "source": "https://www.ncs.gov.ng"
+    },
+    {
+        "question": "The AI is not accepting my ID card, what should I do?",
+        "answer": "To ensure your ID card is accepted by the AI, make sure that the image is clear, well-lit, and all details are visible. If the issue persists, try using a different ID card such as the long NIN slip.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "Can I use my phone to register my business?",
+        "answer": "Yes, you can use your phone to register your business as long as you have a stable internet connection and access to the required documents in digital format. Also ensure to put your phone on desktop view for a good user experience",
+        "source": "CAC Registration Expert"
+    },
+    {
+        "question": "What internet browser is best for registering my business?",
+        "answer": "For the best experience when registering your business, it is recommended to use Google Chrome or Mozilla Firefox as they are compatible with most online registration portals.",
+        "source": "Google"
+    },
+    {
+        "question": "Can I register my business on weekends or public holidays?",
+        "answer": "Yes, you can register your business on weekends or public holidays as the online registration portals are available 24/7. However, processing times may vary depending on the day and time of submission. Approval of applications submitted on weekends might be delayed till the begining of the new week if it require human interference",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What should I do if I encounter technical issues during the registration process?",
+        "answer": "If you encounter technical issues during the registration process, try refreshing the page, clearing your browser cache, or using a different browser. If the problem persists, contact customer support for assistance.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "Can I register a business name that is similar to an existing one?",
+        "answer": "No, you cannot register a business name that is identical or too similar to an existing registered business name. The CAC will reject names that are likely to cause confusion with existing names.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What are the common reasons for name rejection during business registration?",
+        "answer": "Common reasons for name rejection include: \uf0b7 The name is identical or too similar to an existing registered name. \uf0b7 The name contains prohibited words or phrases. \uf0b7 The name is misleading or implies government affiliation. \uf0b7 The name does not comply with naming conventions set by the CAC.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "How do I check the status of my business registration application?",
+        "answer": "You can check the status of your business registration application by logging into your account on the CAC portal and navigating to the dashboard where you can view the status of your application.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What should I do if my business registration application is rejected?",
+        "answer": "If your business registration application is rejected, review the rejection reasons provided by the CAC, make the necessary corrections, and resubmit your application. You may also seek assistance from a CAC registration expert if needed.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "Can I change my business name after registration?",
+        "answer": "Yes, you can change your business name after registration by applying for a name change through the CAC. This process may involve additional fees and documentation.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What are the benefits of registering a business in Nigeria?",
+        "answer": "Benefits of registering a business in Nigeria include: \uf0b7 Legal recognition and protection of the business name. \uf0b7 Ability to open a corporate bank account. \uf0b7 Access to government grants and incentives. \uf0b7 Enhanced credibility with customers and suppliers. \uf0b7 Limited liability protection for business owners (in the case of companies).",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "How do I find a CAC accredited agent to assist with my business registration?",
+        "answer": "You can find a CAC accredited agent by visiting the CAC website and checking their list of accredited agents, or by searching online for reputable business registration service providers. However, I can recommend you to use my service as I am a CAC registration expert. Type \"CAC Registration Expert\" and I will provide you the contact details of an expert to assist you.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "What is the difference between a business name and a company in Nigeria?",
+        "answer": "A business name is a simpler form of registration suitable for sole proprietorships or partnerships, while a company (Ltd or PLC) is a more complex structure that offers limited liability protection and is suitable for larger businesses.",
+        "source": "https://www.cac.gov.ng"
+    },
+    {
+        "question": "CAC Registration Expert",
+        "answer": "You can contact a CAC registration expert through the following means: \uf0b7 WhatsApp: +234 802 871 6801 \uf0b7 Email: adenikecac@gmail.com",
+        "source": "CAC Registration Expert"
+    },
+    {
+        "question": "What can NEPC do for me as a buyer?",
+        "answer": "NEPC can assist, advice and guide you on how to embark on successful business considering sourcing products from Nigeria. You can also go through the NEPC's list of services page at https://nepc.gov.ng/importer/about-us/services/",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What are the benefits of sourcing products from Nigeria?",
+        "answer": "Benefits of sourcing products from Nigeria include access to a wide range of unique and high-quality products, competitive pricing, and the opportunity to support local businesses and the Nigerian economy.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+    "question": "Where can I find reputable Nigerian suppliers?",
+    "answer": "The Nigerian Export Promotion Council (NEPC) is the government agency responsible for promoting Nigerian non-oil exportable products. We help companies worldwide to source goods and services from Nigeria. Nigeria prides itself on having premium products.\n\nWe can help you reduce the time, risk, and cost involved in doing business with Nigeria by:\n- Helping you identify and contact verified Nigerian suppliers\n- Alerting you to the latest Nigerian products and services to help grow your business",
+    "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "Why should I buy from Nigeria?",
+        "answer": "We are developing and expanding fast in our product offer for international markets. Our trade performance is constantly increasing and improving through several projects. Investments in local capacity building ensure sustainable and high-quality Nigerian exports. Buying from Nigeria will also help the rural women caterer for their families and improve their standard of living.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "How can I verify and expoter's authenticity?",
+        "answer": "Nigerian exporters can be verified electronically on our verification portal noted that companies registered before 2017 can be verified manually by sending an email to enquiries@nepc.gov.ng. Please be aware that the Nigerian Export Promotion Council is not able to undertake due diligence, background or credibility check on your behalf.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What do I do if I fall into a commercial dispute with a Nigerian business?",
+        "answer": "The Nigerian Export Promotion Council is not able to provide assistance in relation to commercial disputes with Nigerian companies. However, you can seek legal assistance with the help of the embassy and high commission of your country in Nigeria.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "How can I get help with sourcing from Nigeria?",
+        "answer": "You can get help with sourcing from Nigeria by contacting the Nigerian Export Promotion Council (NEPC) through their official website, email (enquiries@nepc.gov.ng), or phone (+234 802 871 6801).",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What are some popular products to source from Nigeria?",
+        "answer": "Popular products to source from Nigeria include agricultural products (such as cocoa, sesame seeds, and cashew nuts), textiles and garments, leather goods, and handicrafts.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What is the process for importing goods from Nigeria?",
+        "answer": "The process for importing goods from Nigeria typically involves identifying a reputable supplier, negotiating terms, arranging for shipping and logistics, and complying with customs regulations in both Nigeria and the destination country.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What are the payment methods accepted by Nigerian suppliers?",
+        "answer": "Nigerian suppliers typically accept various payment methods, including bank transfers, letters of credit, and online payment platforms. It is important to discuss and agree on the payment method with the supplier before finalizing any transactions.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What are the shipping options available for importing goods from Nigeria?",
+        "answer": "Shipping options for importing goods from Nigeria include sea freight, air freight, and courier services. The choice of shipping method will depend on factors such as the type of goods, budget, and delivery timeline.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What are the customs regulations for importing goods from Nigeria?",
+        "answer": "Customs regulations for importing goods from Nigeria vary by country. It is important to research and understand the specific requirements, duties, and taxes applicable in the destination country before importing goods.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "How can I ensure the quality of products sourced from Nigeria?",
+        "answer": "To ensure the quality of products sourced from Nigeria, it is advisable to conduct due diligence on suppliers, request product samples, and consider third-party inspections or certifications.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What support services does NEPC offer to international buyers?",
+        "answer": "NEPC offers various support services to international buyers, including assistance with supplier identification, market information, trade facilitation, and export promotion activities.",
+        "source": "https://nepc.gov.ng"
+    },
+    {
+        "question": "What happened when a taxpayer's payment is posted to a wrong tax office?",
+        "answer": "This can only be possible if the taxpayer does not have a TIN or the bank`s branch teller entered a wrong TIN which is either for another taxpayer or the TIN does not even exist. The system administrator, if informed officially, will reclassify the tax office or such payment. In cases where the taxpayer does not exist in the database, the registration officer will create the taxpayer and the system will generate a valid TIN for the taxpayer. Also, in cases where the TIN was wrongly assigned to a tax office, the TIN can be redirected to the correct office.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "How does FIRS prevents issuance of multiple reciept for same payment?",
+        "answer": "The automated receipts and credit notes issuance will eliminate issuance of multiple receipts",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "If a taxpayer gives a cheque to a bank in his office without going to the bank, how can the taxpayer know whether payment has been made to FIRS account?",
+        "answer": "The taxpayer should insist on the bank delivering the e-ticket to him which will indicate the date and time payment was captured into FIRS account by the bank.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "If someone lives in Kaduna and pays his tax there, can he obtain his TCC in Abuja ?",
+        "answer": "No, one can only obtain his/her TCC from the Tax Authority where the person is registered for tax purposes and has been paying his taxes in compliance with the rule of residence as contained in the tax law",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Is medical allowance taxed?",
+        "answer": "Yes. If it is paid directly to the hospital, Withholding Tax (WHT) should be deducted and if it is given to an employee in the form of allowance, it is taxed under PAYE.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Why does FIRS still refuse to issue TCC after PAYE has been deducted from the staff salary?",
+        "answer": "FIRS does not deny issuance of TCC to any taxpayer who has paid his tax liability in full. However, TCC request is rejected where the taxpayer still has outstanding liability to pay.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What is Tax avoidance and Tax evasion?",
+        "answer": "Tax Avoidance: -This is considered as a way of identifying the loophole in the tax law and then taking advantage of such loophole to reduce the tax payable Tax Evasion: -This is a deliberate and illegal act of the taxpayer not to pay the correct tax",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Can a taxpayer pay to any collecting bank branch?",
+        "answer": "Yes. There are no designated bank branches for any tax offices or tax types. All approved Lead/Collecting banks can collect for all offices and tax types.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What is the process involved in getting back tax payment erroneously credited in the name of the depositor instead of the taxpayer?",
+        "answer": "Any tax paid in error can be reversed by the collecting bank within 24hours if the bank is put on notice within the period. However, if the error was not detected on time, refund can be made by FIRS on request through e-payment platform with the option to use it to set-off future tax.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Why does it take more than two weeks to issue TCC even if the taxpayer pays tax in cash?",
+        "answer": "TCC can be issued only after all taxes payable by the taxpayer for the past three preceding years have been paid. The statutory standard of issuing TCC within two weeks is still in force. However, the two weeks start to count only after all taxes have been paid and from the day the taxpayer files application for TCC with the Tax office and not from the date of payment of taxes to the Banks",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "On what basis will an application for TCC be rejected after two weeks and still be under processing?",
+        "answer": "TCC can be rejected on the following grounds: i. Where taxes have not been paid ii Where penalties or interest is still outstanding iii. Where outstanding returns have not been filediv. Where there are outstanding issues arising from tax queries, audit or investigation. v. Where the case is with the Tax Appeal Tribunal (TAT) for hearing and part of the tax has not been paid as required.TCC once rejected cannot be said to be still under processing, but it is kept on hold until issues outstanding have been resolved or sorted out by the taxpayer with the relevant office.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Is installment Payment no longer allowed for self assessment filers?",
+        "answer": "The tax law still recognizes the granting of installment payment to self assessment filers. However, this can only be granted on application by the taxpayer to the tax office.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What is Accounting year and Accounting period?",
+        "answer": "Accounting Year:-This is a twelve (12) months period over which an entity`s financial accounts are made-up. Accounting Period:-This simply means the period with reference to which financial accounts of an entity are prepared.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Is inclusion of Taxpayer Identification Number (TIN) on a Contractor's quotation necessary?",
+        "answer": "Yes it is mandatory",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What is the meaning of due date?",
+        "answer": "Due date is the date prescribed by law for filing of tax returns and making of tax payments by taxpayers. All tax types have their different due dates as provided by the relevant tax laws.Due dates for other tax types are as shown below:",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What is P. A. Y. E?",
+        "answer": "P. A. Y. E. is an acronym for “Pay As You Earn”. It is a method of collecting personal income tax from employee`s salaries and wages through deduction at source by an employer as provided by the relevant sections of Personal Income Tax Act (PITA).(S.81of Personal Income Tax Act Cap P8 LFN 2004)",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Why do PAYE charges vary from Ministries to Ministries for the same level of income/salary?",
+        "answer": "PAYE does not differ because the rates used for computation are the same. PAYE rates are as shown in question number 4 below.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Is the submission of comprehensive list of staff with PAYE deductions different from submission of annual returns?",
+        "answer": "No. Comprehensive list of employees with PAYE deductions is continuously submitted on monthly basis steach time PAYE is being remitted to FIRS, while annual returns (form H1) is to be submitted by 31day of January of every year by every employer to enable the Tax Authority ascertain whether the correct deductions and payments of tax have been made for the previous year (period of twelve months) for all its employees.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Where should PAYE deductions of staff working in Abuja but residing in Suleja or Mararaba be remitted to?",
+        "answer": "By residency rule, an employee's PAYE is payable to the Tax Authority of his/her place of residence. It is therefore the duty of the employer to deduct and remit it to the Tax Authority where the employee is resident that is Niger State Internal Revenue Service or Nasarawa State Internal Revenue Service respectively.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Is it possible to apply for a refund for excess PIT tax deductions/payments?",
+        "answer": "Yes; the law provides that excess tax paid by any employee shall be refunded on application by the employee with the option of set-off against future tax liability.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "What is Gross Emolument/salary?",
+        "answer": "Personal Income Tax Act (PITA) as amended defines Gross Emolument as the aggregate of wages, salaries, allowances (including benefits-in-kind), gratuities, superannuation and any other income derived solely by reason of employment.",
+        "source": "https://www.firs.gov.ng/"
+    },
+    {
+        "question": "Is it within the law for a state tax authority to charge interest, penalty and threaten distrainment for a shortfall between the PAYE remitted by a company and the expectation on the company`s tax deduction cards, going by the fact that actual tax could differ from expectations as a result of salary cuts and staff exits?",
+        "answer": "It is lawful for a state tax authority to carry out audit of your returns to ascertain compliance. It is also lawful for penalty to be charged on any shortfall. It should be noted however that there must be reconciliation meeting by both parties where all issues must be discussed and agreed. Where a taxpayer is still not pleased with the decision reached, the taxpayer has the powers as conferred by the PITA (as amended) to appeal to the Tax Appeal Tribunal.",
+        "source": "https://www.firs.gov.ng/"
     }
 ]
