@@ -19,7 +19,10 @@ export default function Home() {
             <MoreEllipsis />
             <Chatbox />
           </div>
-          <HistorySheet />
+          <div
+            aria-hidden
+            className="mx-auto mt-4 h-4 w-8 rounded-full border bg-black"
+          />
         </div>
       </section>
     </main>

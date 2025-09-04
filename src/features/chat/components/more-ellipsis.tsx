@@ -4,6 +4,7 @@ import { AnimatePresence, motion, Variants } from "motion/react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { HistorySheet } from "@/components/elements";
 import { cn } from "@/lib/utils";
 
 export default function MoreEllipsis() {
@@ -58,14 +59,16 @@ export default function MoreEllipsis() {
           </motion.div>
         )}
       </AnimatePresence>
-      <Button
-        size={"icon"}
-        variant={"outline"}
-        onClick={() => setOpenMore((prev) => !prev)}
-        className="hover:bg-background/90 size-[2.875rem] shadow-xs"
-      >
-        <Ellipsis />
-      </Button>
+      <HistorySheet>
+        <Button
+          size={"icon"}
+          variant={"outline"}
+          // onClick={() => setOpenMore((prev) => !prev)}
+          className="hover:bg-background/90 size-[2.875rem] shadow-xs"
+        >
+          <Ellipsis />
+        </Button>
+      </HistorySheet>
     </div>
   );
 }

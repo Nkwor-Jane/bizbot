@@ -8,14 +8,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-export default function HistorySheet() {
+export default function HistorySheet({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <Sheet>
       <SheetTrigger>
-        <div
+        {/* <div
           aria-hidden
-          className="mx-auto mt-4 h-1.5 w-40 rounded-full border bg-black"
-        />
+          className="mx-auto mt-4 h-4 w-8 rounded-full border bg-black"
+        /> */}
+        {children}
       </SheetTrigger>
       <SheetContent side="top" className="min-h-1/2">
         <SheetHeader>
