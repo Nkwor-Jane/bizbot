@@ -1,3 +1,5 @@
+"use client";
+import { useRef, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -9,12 +11,33 @@ import {
 } from "@/components/ui/sheet";
 
 export default function HistorySheet() {
+  const [open, setOpen] = useState(false);
+  const startY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    startY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (startY.current !== null) {
+      const endY = e.changedTouches[0].clientY;
+      const diff = startY.current - endY;
+
+      // if dragged upward enough, open the sheet
+      if (diff > 50) {
+        setOpen(true);
+      }
+    }
+    startY.current = null;
+  };
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
         <div
-          aria-hidden
-          className="mx-auto mt-4 h-1.5 w-40 rounded-full border bg-black"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="mx-auto mt-4 h-1.5 w-40 rounded-full border bg-black hover:cursor-grab active:cursor-grabbing"
         />
       </SheetTrigger>
       <SheetContent side="top" className="min-h-1/2">
