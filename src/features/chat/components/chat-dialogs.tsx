@@ -59,7 +59,7 @@ export default function ChatDialogs() {
                 <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
               </span>
               {sources && sources.length > 0 && (
-                <div className="mb-4 space-y-2 text-sm text-lime-900">
+                <div className="my-4 space-y-2 text-sm text-lime-700 dark:text-lime-300">
                   <h3 className="font-bold">SOURCES</h3>
                   <ul className="space-y-1">
                     {sources.map((source, index) => (
