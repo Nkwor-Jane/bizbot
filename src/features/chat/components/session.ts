@@ -38,7 +38,6 @@ export default function ChatSessionManager() {
       const messages = historyData.history
         .map((item: any, index: number) => {
           const messages = [];
-          console.log("item:", item);
 
           // Add user message if it exists
           if (item.user_message) {
@@ -56,7 +55,6 @@ export default function ChatSessionManager() {
           // Add bot message if it exists
           if (item.bot_response) {
             const parsedSources = parseSources(item.sources_used);
-            console.log("ParsedSources:", parsedSources);
 
             messages.push({
               id: `${currentSessionId}-bot-${index}`,
