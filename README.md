@@ -1,7 +1,8 @@
 # BizBot 🤖💼
 
 AI-powered business assistant built for the **AltSchool ML Hackathon 2025**.
-BizBot helps teams and individuals, chat with data, and improve productivity through an intuitive interface to know about NIgerian BUsinesses and how to set one up.
+BizBot is an intelligent platform that enables individuals to engage with data in a conversational way. 
+Designed to improve productivity, it offers valuable insights into Nigerian businesses while also providing practical guidance for starting one.
 
 ---
 
