@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BizBot 🤖💼
 
-## Getting Started
+AI-powered business assistant built for the **AltSchool ML Hackathon 2025**.
+BizBot helps teams and individuals, chat with data, and improve productivity through an intuitive interface to know about NIgerian BUsinesses and how to set one up.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Project Overview
+
+BizBot is designed to:
+
+- Provide a seamless **chat interface** for business queries.
+- Fetch, display, and summarize information from multiple sources.
+- Store and manage **chat sessions** with proper history and citations.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 15, React, TypeScript, TailwindCSS, ShadCN UI, Framer Motion
+- **State Management:** Context API + useReducer, React Query (TanStack)
+- **Backend:** Node.js/Express
+- **Database:** MongoDB
+- **APIs & Tools:** Axios, IndexedDB
+
+---
+
+## 📂 Project Structure
+
+```
+/src
+  ├── app/              # Next.js app router (routes, layouts, pages)
+  ├── components/       # Shared UI + layout components (buttons, modals, navbar)
+  ├── features/         # Feature-specific modules
+  │   ├── chat/         
+  │   │   ├── components/
+  │   │   ├── context/
+  │   │   ├── db/
+  │   │   ├── hooks/
+  │   │   ├── services/
+  │   │   └── utils/
+  │   └── theme/
+  ├── lib/              # Core libraries (db client, api-client, auth config)
+  ├── utils/            # Generic helper functions (formatDate, parseSources)
+  ├── constants/        # Static values (routes, enums, roles)
+  ├── types/            # Global TypeScript types & interfaces
+  └── provider/         # Global providers (notifications, TanStack, theme)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚡ Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 💬 AI-powered chat interface with **session history**
+- 📚 Source citations displayed for transparency
+- 🔒 Authentication & protected routes
+- 📊 Responsive, animated UI
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+<!-- ## 📜 Data Sources & Citations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- API calls and business datasets (list your specific sources here).
+- Sources are parsed and attached to chat responses for validation. -->
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📸 Screenshots
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<table>
+  <tr>
+    <td><img src="./public/previews/chat-1.png" alt="Preview of Text in Chat Box" width="100%"></td>
+    <td><img src="./public/previews/chat-2.png" alt="Preview of Analyzing Chat" width="100%"></td>
+  </tr>
+  <tr>
+    <td><img src="./public/previews/chat-3.png" alt="Preview of Start of AI Response" width="100%"></td>
+    <td><img src="./public/previews/chat-4.png" alt="Preview of End of AI Response" width="100%"></td>
+  </tr>
+</table>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---
+
+## 📹 Submission Requirements
+
+### 1. GitHub Repository
+
+This branch/repo contains:
+
+- Full project code for the frontend
+- Documentation (this README)
+- Data sources and citations
+
+### 2. Presentation Slide Deck
+
+📂 [Slide Deck Link](#) (Google Slides / PPT)
+
+### 3. Short Video Demo (5–10 mins)
+
+🎥 [Video Demo Link](#) (YouTube / Drive)
+
+---
+
+## 👥 Team
+
+- **Osezele Ejemen Iboi** – Frontend Engineer
+- **Nkwor Jane** – Backend Engineer
+- **Adetokun Adenike** – Cloud Engineer
+
+---
+
+## 🙌 Acknowledgments
+
+- **AltSchool Africa** – Hackathon organizers
+- Mentors, teammates, and the dev community
