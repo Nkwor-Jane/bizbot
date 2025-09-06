@@ -39,7 +39,7 @@ export default function ChatDialogs() {
             <div
               key={id}
               className={cn(
-                "overflow-wrap-anywhere word-break-break-word flex max-w-[85%] flex-col gap-px break-words hyphens-auto",
+                "overflow-wrap-anywhere word-break-break-word flex max-w-[90%] flex-col gap-px break-words hyphens-auto",
                 {
                   "text-lime-700 dark:text-lime-100 [&>small]:text-left": isAI,
                 },
