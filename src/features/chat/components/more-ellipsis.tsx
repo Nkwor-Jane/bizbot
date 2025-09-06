@@ -8,7 +8,7 @@ import { HistorySheet } from "@/components/elements";
 import { cn } from "@/lib/utils";
 
 export default function MoreEllipsis() {
-  const [openMore, setOpenMore] = useState<boolean>(false);
+  const [openMore, _setOpenMore] = useState<boolean>(false);
 
   return (
     <div className="relative mr-1.5 mb-4 flex flex-col items-end">

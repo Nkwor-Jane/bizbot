@@ -13,6 +13,15 @@ export async function GET(
       { status: 400 },
     );
   }
-  const { data } = await ChatService.getChatHistory.server(session_id);
-  return data;
+
+  try {
+    const data = await ChatService.getChatHistory.server(session_id);
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error("Error fetching chat history:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch chat history", error: error.message },
+      { status: 500 },
+    );
+  }
 }

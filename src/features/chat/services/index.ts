@@ -18,7 +18,7 @@ export const ChatService = {
       return data;
     },
     client: async (session_id: string) => {
-      const { data } = await apiClient.get(`/history/${session_id}`);
+      const { data } = await apiClient.get(`/chat/history/${session_id}`);
       return data;
     },
   },

@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useNotifications } from "@/provider/notifications";
 
 import { useChat } from "../context";
-import { usePostChat } from "../hook";
+import { usePostChat } from "../hook/queries";
 
 const FormSchema = z.object({
   question: z
@@ -30,16 +30,20 @@ const FormSchema = z.object({
       message: "Question must not be longer than 30 characters.",
     }),
 });
-
+// fd8f8231-2421-47c6-8772-e638d8fc4847
 export default function Chatbox() {
-  const { addChatMessage } = useChat();
+  const {
+    addChatMessage,
+    state: { currentSessionId },
+    addNewSessionId,
+  } = useChat();
   const { mutateAsync: postChat, isPending } = usePostChat();
   const { addNotification, removeNotification } = useNotifications();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: { question: "" },
-    mode: "onBlur",
+    mode: "onSubmit",
   });
 
   // If there is an error, show it as a notification
@@ -58,16 +62,25 @@ export default function Chatbox() {
     // Add User's message to the chat context
     addChatMessage({ text: data.question, sender: "user" });
 
-    const { response, session_id, sources } = await postChat({
-      message: data.question,
-    });
+    try {
+      const requestData: ChatPost = { message: data.question };
+      if (currentSessionId) requestData.session_id = currentSessionId;
 
-    form.reset();
+      const { response, session_id, sources } = await postChat(requestData);
 
-    // Add AI's message to the chat context
-    addChatMessage({ text: response, sender: "ai", sources });
+      form.reset();
 
-    console.log("Post Chat Response: ", { response, session_id, sources });
+      // Add AI's message to the chat context
+      addChatMessage({ text: response, sender: "ai", sources });
+
+      // If we got a session_id back and we don't have a current session,
+      // this means it's a new chat, so save the session_id
+      if (session_id && !currentSessionId) await addNewSessionId(session_id);
+
+      console.log("Post Chat Response: ", { response, session_id, sources });
+    } catch (error) {
+      console.error("Error in chat submission:", error);
+    }
   }
 
   return (
@@ -78,7 +91,6 @@ export default function Chatbox() {
           name="question"
           render={({ field }) => (
             <FormItem>
-              {/* <FormMessage className="text-center" /> */}
               <FormLabel className="sr-only">Question</FormLabel>
               <FormControl>
                 <Textarea
