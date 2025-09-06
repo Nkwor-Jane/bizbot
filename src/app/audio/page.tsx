@@ -1,6 +1,6 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, Play, Pause, Trash2, Download } from 'lucide-react';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Mic, MicOff, Play, Pause, Trash2, Download } from "lucide-react";
 
 // Domain Models
 interface Recording {
@@ -15,13 +15,13 @@ interface Recording {
 // Value Objects
 class Duration {
   constructor(private readonly seconds: number) {
-    if (seconds < 0) throw new Error('Duration cannot be negative');
+    if (seconds < 0) throw new Error("Duration cannot be negative");
   }
 
   toString(): string {
     const mins = Math.floor(this.seconds / 60);
     const secs = this.seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   }
 
   get value(): number {
@@ -39,9 +39,9 @@ interface IRecordingRepository {
 
 // Repository Implementation
 class IndexedDBRecordingRepository implements IRecordingRepository {
-  private readonly dbName = 'VoiceRecorderDB';
+  private readonly dbName = "VoiceRecorderDB";
   private readonly version = 1;
-  private readonly storeName = 'recordings';
+  private readonly storeName = "recordings";
   private db: IDBDatabase | null = null;
 
   private async init(): Promise<void> {
@@ -49,18 +49,18 @@ class IndexedDBRecordingRepository implements IRecordingRepository {
 
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version);
-      
-      request.onerror = () => reject(new Error('Failed to open database'));
+
+      request.onerror = () => reject(new Error("Failed to open database"));
       request.onsuccess = () => {
         this.db = request.result;
         resolve();
       };
-      
+
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
-          store.createIndex('timestamp', 'timestamp', { unique: false });
+          const store = db.createObjectStore(this.storeName, { keyPath: "id" });
+          store.createIndex("timestamp", "timestamp", { unique: false });
         }
       };
     });
@@ -68,63 +68,63 @@ class IndexedDBRecordingRepository implements IRecordingRepository {
 
   async save(recording: Recording): Promise<void> {
     await this.init();
-    
+
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
-      
+
       const recordingToStore = { ...recording };
       delete recordingToStore.url;
-      
+
       const request = store.put(recordingToStore);
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(new Error('Failed to save recording'));
+      request.onerror = () => reject(new Error("Failed to save recording"));
     });
   }
 
   async findAll(): Promise<Recording[]> {
     await this.init();
-    
+
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readonly');
+      const transaction = this.db!.transaction([this.storeName], "readonly");
       const store = transaction.objectStore(this.storeName);
       const request = store.getAll();
-      
+
       request.onsuccess = () => {
         const recordings = request.result.map((recording: Recording) => ({
           ...recording,
-          url: URL.createObjectURL(recording.blob)
+          url: URL.createObjectURL(recording.blob),
         }));
         resolve(recordings);
       };
-      
-      request.onerror = () => reject(new Error('Failed to fetch recordings'));
+
+      request.onerror = () => reject(new Error("Failed to fetch recordings"));
     });
   }
 
   async delete(id: number): Promise<void> {
     await this.init();
-    
+
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.delete(id);
-      
+
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(new Error('Failed to delete recording'));
+      request.onerror = () => reject(new Error("Failed to delete recording"));
     });
   }
 
   async clear(): Promise<void> {
     await this.init();
-    
+
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.clear();
-      
+
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(new Error('Failed to clear recordings'));
+      request.onerror = () => reject(new Error("Failed to clear recordings"));
     });
   }
 }
@@ -155,7 +155,7 @@ class WebAudioRecorder implements IAudioRecorder {
           echoCancellation: true,
           noiseSuppression: true,
           sampleRate: 44100,
-        }
+        },
       });
 
       this.mediaRecorder = new MediaRecorder(this.stream);
@@ -167,19 +167,20 @@ class WebAudioRecorder implements IAudioRecorder {
 
       this.mediaRecorder.start();
     } catch (error) {
-      throw new Error('Failed to access microphone. Please check permissions.');
+      console.error(error);
+      throw new Error("Failed to access microphone. Please check permissions.");
     }
   }
 
   async stopRecording(): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      if (!this.mediaRecorder || this.mediaRecorder.state !== 'recording') {
-        reject(new Error('No active recording'));
+      if (!this.mediaRecorder || this.mediaRecorder.state !== "recording") {
+        reject(new Error("No active recording"));
         return;
       }
 
       this.mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        const audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
         this.cleanup();
         resolve(audioBlob);
       };
@@ -189,12 +190,12 @@ class WebAudioRecorder implements IAudioRecorder {
   }
 
   isRecording(): boolean {
-    return this.mediaRecorder?.state === 'recording';
+    return this.mediaRecorder?.state === "recording";
   }
 
   private cleanup(): void {
     if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
+      this.stream.getTracks().forEach((track) => track.stop());
       this.stream = null;
     }
     this.mediaRecorder = null;
@@ -209,7 +210,7 @@ class WebAudioPlayer implements IAudioPlayer {
 
   play(recording: Recording): void {
     const audio = this.getOrCreateAudioElement(recording);
-    
+
     if (this.currentPlayingId === recording.id) {
       audio.pause();
       this.currentPlayingId = null;
@@ -231,7 +232,7 @@ class WebAudioPlayer implements IAudioPlayer {
 
   private getOrCreateAudioElement(recording: Recording): HTMLAudioElement {
     let audio = this.audioElements.get(recording.id);
-    
+
     if (!audio) {
       audio = new Audio(recording.url);
       audio.onended = () => {
@@ -239,12 +240,12 @@ class WebAudioPlayer implements IAudioPlayer {
       };
       this.audioElements.set(recording.id, audio);
     }
-    
+
     return audio;
   }
 
   private stopAllAudio(): void {
-    this.audioElements.forEach(audio => audio.pause());
+    this.audioElements.forEach((audio) => audio.pause());
   }
 }
 
@@ -255,15 +256,15 @@ const useRecordingTimer = () => {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    
+
     if (isActive) {
       interval = setInterval(() => {
-        setTime(prevTime => prevTime + 1);
+        setTime((prevTime) => prevTime + 1);
       }, 1000);
     } else if (!isActive && time !== 0) {
       setTime(0);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -284,7 +285,7 @@ const useRecordings = (repository: IRecordingRepository) => {
       const savedRecordings = await repository.findAll();
       setRecordings(savedRecordings);
     } catch (error) {
-      console.error('Error loading recordings:', error);
+      console.error("Error loading recordings:", error);
     } finally {
       setIsLoading(false);
     }
@@ -293,9 +294,9 @@ const useRecordings = (repository: IRecordingRepository) => {
   const addRecording = async (recording: Recording) => {
     try {
       await repository.save(recording);
-      setRecordings(prev => [recording, ...prev]);
+      setRecordings((prev) => [recording, ...prev]);
     } catch (error) {
-      console.error('Error saving recording:', error);
+      console.error("Error saving recording:", error);
       throw error;
     }
   };
@@ -303,15 +304,15 @@ const useRecordings = (repository: IRecordingRepository) => {
   const removeRecording = async (id: number) => {
     try {
       await repository.delete(id);
-      
-      const recording = recordings.find(r => r.id === id);
+
+      const recording = recordings.find((r) => r.id === id);
       if (recording?.url) {
         URL.revokeObjectURL(recording.url);
       }
-      
-      setRecordings(prev => prev.filter(r => r.id !== id));
+
+      setRecordings((prev) => prev.filter((r) => r.id !== id));
     } catch (error) {
-      console.error('Error deleting recording:', error);
+      console.error("Error deleting recording:", error);
       throw error;
     }
   };
@@ -330,7 +331,10 @@ const VoiceRecorderApp: React.FC = () => {
   // const audioRecorder = new WebAudioRecorder();
   // const audioPlayer = new WebAudioPlayer();
 
-    const repository = React.useMemo(() => new IndexedDBRecordingRepository(), []);
+  const repository = React.useMemo(
+    () => new IndexedDBRecordingRepository(),
+    [],
+  );
   const audioRecorderRef = React.useRef<IAudioRecorder>(new WebAudioRecorder());
   const audioPlayerRef = React.useRef<IAudioPlayer>(new WebAudioPlayer());
 
@@ -340,10 +344,16 @@ const VoiceRecorderApp: React.FC = () => {
   // State Management
   const [isRecording, setIsRecording] = useState(false);
   const [currentPlayingId, setCurrentPlayingId] = useState<number | null>(null);
-  
+
   // Custom Hooks
-  const { time, start: startTimer, stop: stopTimer, isActive: isTimerActive } = useRecordingTimer();
-  const { recordings, addRecording, removeRecording, isLoading } = useRecordings(repository);
+  const {
+    time,
+    start: startTimer,
+    stop: stopTimer,
+    isActive: isTimerActive,
+  } = useRecordingTimer();
+  const { recordings, addRecording, removeRecording, isLoading } =
+    useRecordings(repository);
 
   // Event Handlers
   const handleStartRecording = async (): Promise<void> => {
@@ -352,7 +362,7 @@ const VoiceRecorderApp: React.FC = () => {
       setIsRecording(true);
       startTimer();
     } catch (error) {
-       console.log(error)
+      console.log(error);
       alert("error?.message");
     }
   };
@@ -368,12 +378,12 @@ const VoiceRecorderApp: React.FC = () => {
         url: URL.createObjectURL(blob),
         blob,
         duration: time,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString(),
       };
 
       await addRecording(recording);
     } catch (error) {
-      console.error('Error stopping recording:', error);
+      console.error("Error stopping recording:", error);
     }
   };
 
@@ -383,7 +393,7 @@ const VoiceRecorderApp: React.FC = () => {
   };
 
   const handleDownloadRecording = (recording: Recording): void => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = recording.url!;
     link.download = `voice-recording-${recording.id}.webm`;
     document.body.appendChild(link);
@@ -404,19 +414,17 @@ const VoiceRecorderApp: React.FC = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
       <Header />
-      
+
       <RecordingControls
         isRecording={isRecording}
         onStartRecording={handleStartRecording}
         onStopRecording={handleStopRecording}
       />
-      
-      {isRecording && (
-        <RecordingTimer duration={new Duration(time)} />
-      )}
-      
+
+      {isRecording && <RecordingTimer duration={new Duration(time)} />}
+
       <RecordingsList
         recordings={recordings}
         currentPlayingId={currentPlayingId}
@@ -430,16 +438,16 @@ const VoiceRecorderApp: React.FC = () => {
 
 // Sub-components (following SRP)
 const LoadingSpinner: React.FC = () => (
-  <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+  <div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
     <div className="flex items-center justify-center py-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
       <span className="ml-2 text-gray-600">Loading recordings...</span>
     </div>
   </div>
 );
 
 const Header: React.FC = () => (
-  <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
+  <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">
     Voice Recorder
   </h1>
 );
@@ -453,29 +461,29 @@ interface RecordingControlsProps {
 const RecordingControls: React.FC<RecordingControlsProps> = ({
   isRecording,
   onStartRecording,
-  onStopRecording
+  onStopRecording,
 }) => (
-  <div className="flex justify-center gap-4 mb-4">
+  <div className="mb-4 flex justify-center gap-4">
     <button
       onClick={onStartRecording}
       disabled={isRecording}
-      className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${
-        isRecording 
-          ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-          : 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl'
+      className={`flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-all ${
+        isRecording
+          ? "cursor-not-allowed bg-gray-300 text-gray-500"
+          : "bg-red-500 text-white shadow-lg hover:bg-red-600 hover:shadow-xl"
       }`}
     >
       <Mic size={20} />
-      {isRecording ? 'Recording...' : 'Start Recording'}
+      {isRecording ? "Recording..." : "Start Recording"}
     </button>
-    
+
     <button
       onClick={onStopRecording}
       disabled={!isRecording}
-      className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${
-        !isRecording 
-          ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-          : 'bg-gray-700 hover:bg-gray-800 text-white shadow-lg hover:shadow-xl'
+      className={`flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-all ${
+        !isRecording
+          ? "cursor-not-allowed bg-gray-300 text-gray-500"
+          : "bg-gray-700 text-white shadow-lg hover:bg-gray-800 hover:shadow-xl"
       }`}
     >
       <MicOff size={20} />
@@ -489,12 +497,12 @@ interface RecordingTimerProps {
 }
 
 const RecordingTimer: React.FC<RecordingTimerProps> = ({ duration }) => (
-  <div className="text-center mb-6">
-    <div className="text-2xl font-mono text-red-500 mb-2">
+  <div className="mb-6 text-center">
+    <div className="mb-2 font-mono text-2xl text-red-500">
       {duration.toString()}
     </div>
     <div className="flex justify-center">
-      <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+      <div className="h-3 w-3 animate-pulse rounded-full bg-red-500"></div>
     </div>
   </div>
 );
@@ -512,11 +520,11 @@ const RecordingsList: React.FC<RecordingsListProps> = ({
   currentPlayingId,
   onPlay,
   onDownload,
-  onDelete
+  onDelete,
 }) => (
   <div className="space-y-3">
     <RecordingsHeader count={recordings.length} />
-    
+
     {recordings.length === 0 ? (
       <EmptyRecordingsMessage />
     ) : (
@@ -539,18 +547,18 @@ interface RecordingsHeaderProps {
 }
 
 const RecordingsHeader: React.FC<RecordingsHeaderProps> = ({ count }) => (
-  <div className="flex justify-between items-center mb-3">
+  <div className="mb-3 flex items-center justify-between">
     <h2 className="text-lg font-semibold text-gray-700">
       Recordings ({count})
     </h2>
-    <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+    <div className="rounded bg-green-50 px-2 py-1 text-xs text-green-600">
       ✓ Saved locally
     </div>
   </div>
 );
 
 const EmptyRecordingsMessage: React.FC = () => (
-  <p className="text-gray-500 text-center py-8">No recordings yet</p>
+  <p className="py-8 text-center text-gray-500">No recordings yet</p>
 );
 
 interface RecordingItemProps {
@@ -566,18 +574,15 @@ const RecordingItem: React.FC<RecordingItemProps> = ({
   isPlaying,
   onPlay,
   onDownload,
-  onDelete
+  onDelete,
 }) => {
   const duration = new Duration(recording.duration);
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4 border">
+    <div className="rounded-lg border bg-gray-50 p-4">
       <div className="flex items-center justify-between">
-        <RecordingInfo
-          timestamp={recording.timestamp}
-          duration={duration}
-        />
-        
+        <RecordingInfo timestamp={recording.timestamp} duration={duration} />
+
         <RecordingActions
           isPlaying={isPlaying}
           onPlay={onPlay}
@@ -594,14 +599,13 @@ interface RecordingInfoProps {
   duration: Duration;
 }
 
-const RecordingInfo: React.FC<RecordingInfoProps> = ({ timestamp, duration }) => (
+const RecordingInfo: React.FC<RecordingInfoProps> = ({
+  timestamp,
+  duration,
+}) => (
   <div className="flex-1">
-    <div className="text-sm text-gray-600 mb-1">
-      {timestamp}
-    </div>
-    <div className="text-sm text-gray-500">
-      Duration: {duration.toString()}
-    </div>
+    <div className="mb-1 text-sm text-gray-600">{timestamp}</div>
+    <div className="text-sm text-gray-500">Duration: {duration.toString()}</div>
   </div>
 );
 
@@ -616,17 +620,17 @@ const RecordingActions: React.FC<RecordingActionsProps> = ({
   isPlaying,
   onPlay,
   onDownload,
-  onDelete
+  onDelete,
 }) => (
   <div className="flex gap-2">
     <ActionButton
       onClick={onPlay}
       className="bg-blue-500 hover:bg-blue-600"
-      title={isPlaying ? 'Pause' : 'Play'}
+      title={isPlaying ? "Pause" : "Play"}
     >
       {isPlaying ? <Pause size={16} /> : <Play size={16} />}
     </ActionButton>
-    
+
     <ActionButton
       onClick={onDownload}
       className="bg-green-500 hover:bg-green-600"
@@ -634,7 +638,7 @@ const RecordingActions: React.FC<RecordingActionsProps> = ({
     >
       <Download size={16} />
     </ActionButton>
-    
+
     <ActionButton
       onClick={onDelete}
       className="bg-red-500 hover:bg-red-600"
@@ -656,11 +660,11 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   onClick,
   className,
   title,
-  children
+  children,
 }) => (
   <button
     onClick={onClick}
-    className={`p-2 text-white rounded-full transition-colors ${className}`}
+    className={`rounded-full p-2 text-white transition-colors ${className}`}
     title={title}
   >
     {children}

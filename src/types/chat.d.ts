@@ -21,11 +21,13 @@ interface ChatResponse {
 }
 
 interface ChatHistoryResponse {
-  history: Array<{
-    user_message?: string;
-    bot_response?: string;
-    timestamp?: string;
-    confidence_score: number;
-    sources_used?: ChatSource[];
-  }>;
+  history: ChatHistory[];
+}
+
+interface ChatHistory {
+  user_message?: string;
+  bot_response?: string;
+  timestamp?: string;
+  confidence_score: number;
+  sources_used?: ChatSource[];
 }

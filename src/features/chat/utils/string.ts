@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseSources(sourcesUsed: any): ChatSource[] {
   if (!sourcesUsed) return [];
 

@@ -36,7 +36,7 @@ export default function ChatSessionManager() {
     if (isSuccess && historyData && currentSessionId) {
       // Transform the API response to ChatMessage format
       const messages = historyData.history
-        .map((item: any, index: number) => {
+        .map((item: ChatHistory, index: number) => {
           const messages = [];
 
           // Add user message if it exists

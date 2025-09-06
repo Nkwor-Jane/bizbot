@@ -17,6 +17,7 @@ export async function GET(
   try {
     const data = await ChatService.getChatHistory.server(session_id);
     return NextResponse.json(data);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error fetching chat history:", error);
     return NextResponse.json(

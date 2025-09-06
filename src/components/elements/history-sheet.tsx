@@ -129,6 +129,7 @@ export default function HistorySheet({
                       onClick={(e) => handleDeleteSession(sessionId, e)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           handleDeleteSession(sessionId, e as any);
                         }
                       }}
