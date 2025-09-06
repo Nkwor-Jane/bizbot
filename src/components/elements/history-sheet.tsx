@@ -110,14 +110,19 @@ export default function HistorySheet({
                   <button
                     key={sessionId}
                     onClick={() => handleSessionClick(sessionId)}
-                    className={cn("group relative justify-start", {
-                      "border-green-500": currentSessionId === sessionId,
-                    })}
+                    className={cn(
+                      "group relative flex items-center justify-start gap-2",
+                      {
+                        "border-lime-500": currentSessionId === sessionId,
+                      },
+                    )}
                   >
                     <span className="font-black opacity-25">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <dt className="line-clamp-1 font-medium">{sessionId}</dt>
+                    <dt className="line-clamp-1 text-left font-medium">
+                      {sessionId}
+                    </dt>
                     <span
                       role="button"
                       tabIndex={0}
@@ -127,7 +132,7 @@ export default function HistorySheet({
                           handleDeleteSession(sessionId, e as any);
                         }
                       }}
-                      className="absolute right-4 grid size-8 place-content-center rounded-full bg-red-100 text-red-500 group-hover:opacity-100 lg:-top-2 lg:-right-2 xl:opacity-0 dark:bg-red-900/50"
+                      className="absolute right-4 grid size-8 place-content-center rounded-full bg-red-100 text-red-500 group-hover:opacity-100 lg:-top-2 lg:-right-2 xl:opacity-0 dark:bg-red-950"
                     >
                       <Trash size={14} />
                     </span>

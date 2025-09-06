@@ -11,7 +11,7 @@ export default function MoreEllipsis() {
   const [openMore, _setOpenMore] = useState<boolean>(false);
 
   return (
-    <div className="relative mr-1.5 mb-4 flex flex-col items-end">
+    <div className="relative mb-4 flex flex-col items-end">
       <AnimatePresence mode="wait">
         {openMore && (
           <motion.div

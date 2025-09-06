@@ -22,7 +22,7 @@ export default function Home() {
           <DynamicIsland />
           <div className="flex min-h-0 flex-1 flex-col pt-10">
             <ChatDialogs />
-            <div className="flex flex-col">
+            <div className="flex flex-col pt-4">
               <MoreEllipsis />
               <Chatbox />
             </div>
