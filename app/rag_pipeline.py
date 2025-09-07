@@ -1,6 +1,8 @@
 import os
 import time
 import logging
+import re
+
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
 import json
@@ -258,11 +260,10 @@ Core Guidelines:
 - Reference Nigerian agencies: CAC, FIRS, CBN
 - Provide actionable steps in numbered lists when appropriate
 - Be professional and precise
-<|eot_id|>
-
-<|start_header_id|>user<|end_header_id|>
-Nigerian Business Context:
-{context}
+- Understand the user’s context (e.g., caterer, freelancer, NGO) and adapt the business registration steps accordingly.
+- If user mentions a role, map it to the most relevant Nigerian business type (e.g., caterer → food services business → Business Name or Company registration with CAC).
+- Provide step-by-step instructions for registration, including required documents, costs, and regulatory agencies.
+- Always cite sources if available.
 
 Question: {question}
 <|eot_id|>
@@ -534,8 +535,8 @@ What business question can I help you with today?"""
         return {
             "answer": response,
             "sources": [],
-            "confidence": "high",
-            "confidence_score": 1.0,
+            "confidence": "medium",
+            "confidence_score": 0.4,
             "cost": 0.0,
             "response_time": 0.01
         }
@@ -555,47 +556,84 @@ I can assist you with:
 Please ask me a question about Nigerian business procedures, and I'll be happy to help!""",
             
             "sources": [],
-            "confidence": "high", 
-            "confidence_score": 1.0,
+            "confidence": "low", 
+            "confidence_score": 0.2,
             "cost": 0.0,
             "response_time": 0.01
         }
 
+    def _preprocess_question(self, question):
+        """
+        Normalize role-specific queries into more general business registration terms.
+        Returns (normalized_question, detected_role).
+        """
+        role_mappings = {
+            "caterer": "food business",
+            "restaurant": "food business",
+            "chef": "food services business",
+            "freelancer": "sole proprietorship",
+            "consultant": "sole proprietorship",
+            "ngo": "non-profit organization",
+            "importer": "import/export business",
+            "exporter": "import/export business",
+            "farmer": "agriculture business",
+            "retailer": "trading business"
+        }
+
+        q_lower = question.lower()
+        for keyword, mapped in role_mappings.items():
+            if re.search(rf"\b{keyword}\b", q_lower):
+                return f"How do I register a {mapped} in Nigeria?", keyword
+        return question, None
+
     def query(self, question: str) -> Dict:
         """Enhanced query with better JSON handling"""
 
-        # First classify the query type
-        query_type = self.classify_query_type(question)
-        
+        # Step 1: Preprocess role-specific context
+        normalized_question, detected_role = self._preprocess_question(question)
+
+        # Step 2: Classify query type
+        query_type = self.classify_query_type(normalized_question)
+
         if query_type == "greeting":
-            return self.handle_greeting(question)
+            return self.handle_greeting(normalized_question)
         elif query_type == "other":
-            return self.handle_non_business_query(question)
+            if self.kb_type == "json":
+                exact_result = self._exact_match_lookup(normalized_question)
+                if exact_result:
+                    logger.info("Found exact match despite 'other' classification")
+                    if detected_role:
+                        exact_result["answer"] += f"\n\n(Adapted for your role: {detected_role})"
+                    return exact_result
+        
+            return self.handle_non_business_query(normalized_question)
     
         # JSON Knowledge Base Mode with exact matching
         if self.kb_type == "json":
             # Try exact match first
-            exact_result = self._exact_match_lookup(question)
+            exact_result = self._exact_match_lookup(normalized_question)
             if exact_result:
-                logger.info(f"Found exact match: {exact_result['match_type']}")
+                if detected_role:
+                    exact_result["answer"] += f"\n\n(Adapted for your role: {detected_role})"
                 return exact_result
 
             # If no exact match, try vector search with higher threshold
             if self.vector_store:
-                docs = self.vector_store.similarity_search_with_score(question, k=3)
+                docs = self.vector_store.similarity_search_with_score(normalized_question, k=5)
                 
                 if docs:
                     best_doc, score = docs[0]
+                    similarity = 1 - score  # Convert distance to similarity
                     logger.info(f"Vector similarity score: {score:.4f}")
                     
                     # Lower threshold since we want to catch more relevant answers
-                    if score < 0.8:  # Adjust threshold for JSON data
+                    if similarity > 0.3:  # Adjust threshold for JSON data
                         # Extract answer from the document
                         content = best_doc.page_content
                         
                         # Try to extract clean answer
                         if "A: " in content:
-                            answer = content.split("A: ", 1)[1].strip()
+                            answer = content  .split("A: ", 1)[1].strip()
                         elif "Answer: " in content:
                             answer = content.split("Answer: ", 1)[1].strip()
                             if "\nRelated Question:" in answer:
@@ -605,9 +643,12 @@ Please ask me a question about Nigerian business procedures, and I'll be happy t
                         
                         return {
                             "answer": answer,
-                            "sources": [best_doc.metadata.get("source", "Nigerian Business Dataset")],
-                            "confidence": "high" if score > 0.4 else "medium",
-                            "confidence_score": round(1 - score, 2), # COnvert distance to similairity
+                            "sources":[{
+                                "source": best_doc.metadata.get("source", "Nigerian Business Dataset"),
+                                "excerpt": best_doc.page_content[:120] + "..."
+                            }],
+                            "confidence": "high" if similarity > 0.7 else "medium",
+                            "confidence_score": round(similarity, 2), # Convert distance to similarity
                             "cost": 0.0,
                             "response_time": 0.02,
                             "match_type": "vector_search"
@@ -630,13 +671,13 @@ Please ask me a question about Nigerian business procedures, and I'll be happy t
 
         try:
             with get_openai_callback() as cb:
-                result = self.qa_chain({"query": question})
+                result = self.qa_chain({"query": normalized_question})
                 query_cost = cb.total_cost
                 self.total_cost += query_cost
 
             # Extract sources
             sources = []
-            confidence_score = 0.0
+            confidence_score = 0.6
             if "source_documents" in result:
                 sources = [
                     {
@@ -645,15 +686,18 @@ Please ask me a question about Nigerian business procedures, and I'll be happy t
                     }
                     for doc in result["source_documents"]
                 ]
-                confidence_score = self._calculate_confidence(result["source_documents"], question)
-
+                # confidence_score = self._calculate_confidence(result["source_documents"], question)
             response_time = time.time() - start_time
+            answer = result["result"]
+            if detected_role:
+                answer += f"\n\n(Adapted for your role: {detected_role})"
+
 
             return {
-                "answer": result["result"],
+                "answer": answer,
                 "sources": sources,
                 "confidence": self._get_confidence_level(confidence_score),
-                "confidence_score": round(confidence_score, 2),
+                "confidence_score": confidence_score,
                 "cost": round(query_cost, 4),
                 "response_time": round(response_time, 2)
             }

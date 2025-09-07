@@ -3,7 +3,8 @@ from typing import List, Optional
 
 class Source(BaseModel):
     source: str
-    excerpt: str
+    excerpt: Optional[str]  = None
+
 
 class ChatRequest(BaseModel):
     message: str

@@ -71,36 +71,35 @@ class ChatDatabase:
         """Convert sources to JSON string safely"""
         if sources is None:
             return None
-        
-        # Handle different input types
+
+        # Already a JSON string
         if isinstance(sources, str):
             try:
-                # If it's already a JSON string, validate it
-                json.loads(sources)
-                return sources
+                json.loads(sources)  # validate JSON
+                return sources       # keep as-is
             except json.JSONDecodeError:
-                # If it's a plain string, wrap it in a list
-                return json.dumps([sources])
-        
-        elif isinstance(sources, list):
-            # Clean up the sources list to ensure JSON serializability
+                return json.dumps([{"source": sources}])
+
+        # List of items
+        if isinstance(sources, list):
             clean_sources = []
             for source in sources:
                 if isinstance(source, dict):
+                    # Already a dict, keep as-is
                     clean_sources.append(source)
                 elif isinstance(source, str):
                     clean_sources.append({"source": source})
                 else:
                     clean_sources.append({"source": str(source)})
             return json.dumps(clean_sources)
-        
-        elif isinstance(sources, dict):
+
+        # Single dict
+        if isinstance(sources, dict):
             return json.dumps([sources])
-        
-        else:
-            # Fallback for any other type
-            return json.dumps([{"source": str(sources)}])
-    
+
+        # Fallback
+        return json.dumps([{"source": str(sources)}])
+
     def _deserialize_sources(self, sources_json):
         """Convert JSON string back to Python object safely"""
         if sources_json is None:

@@ -7,6 +7,7 @@ from .database import ChatDatabase
 from .schema import ChatRequest, ChatResponse
 import uuid
 import logging
+import time
 from langdetect import detect
 from deep_translator import GoogleTranslator
 
@@ -30,6 +31,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def detect_language(text: str) -> str:
+    """Detect the language of input text"""
+    try:
+        detected_lang = detect(text.strip())
+        logger.info(f"Detected language: {detected_lang}")
+        return detected_lang
+    except Exception as e:
+        logger.error(f"Language detection failed: {e}")
+        return "en"  # Default to English
+
+def safe_translate(text: str, source_lang: str = "auto", target_lang: str = "en") -> str:
+    """Safely translate text between languages"""
+    try:
+        if source_lang == target_lang:
+            return text
+        
+        translator = GoogleTranslator(source=source_lang, target=target_lang)
+        translated = translator.translate(text.strip())
+        logger.info(f"Translated from {source_lang} to {target_lang}")
+        return translated
+    except Exception as e:
+        logger.error(f"Translation failed from {source_lang} to {target_lang}: {e}")
+        return text
+
 def safe_translate_to_english(text: str) -> str:
     try:
         detected_lang = detect(text)
@@ -40,6 +65,25 @@ def safe_translate_to_english(text: str) -> str:
         logger.error(f"Translation failed: {e}")
         return text
 
+def normalize_sources(sources):
+    """Ensure sources are always JSON-friendly dicts"""
+    if not sources:
+        return []
+    
+    normalized = []
+    for s in sources:
+        if isinstance(s, dict):
+            normalized.append({
+                "source": s.get("source", str(s)),
+                "excerpt": s.get("excerpt", "")
+            })
+        else:
+            normalized.append({
+                "source": str(s),
+                "excerpt": ""
+            })
+    return normalized
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     try:
@@ -49,73 +93,58 @@ async def chat_endpoint(request: ChatRequest):
             request.session_id = str(uuid.uuid4())
 
         user_msg_original = request.message.strip()
-        user_msg = safe_translate_to_english(user_msg_original).lower()
+        detected_lang = detect_language(user_msg_original)
 
-        greetings = {
-            "english": ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"],
-            "yoruba": ["bawo", "ẹ káàrọ̀", "ẹ káàsán", "ẹ káalẹ́"],
-            "igbo": ["ndewo", "ụtụtụ ọma", "ehihie ọma", "mgbede ọma"],
-            "hausa": ["sannu", "ina kwana", "ina wuni", "ina yini"],
-            "pidgin": ["how far", "how you dey", "morning oo", "afternoon oo", "evening oo"]
-        }
+        # Translate to English if necessary for processing
+        user_msg_english = safe_translate(
+            user_msg_original, 
+            source_lang=detected_lang, 
+            target_lang="en"
+        )
 
-        smalltalk = {
-            "how are you": "I'm doing great, thanks for asking! 😊",
-            "bawo ni": "Mo wa dada 🙏. (Yorùbá: I'm fine)",
-            "kedụ": "Adị m mma 🙌. (Igbo: I'm fine)",
-            "yaya kake": "Lafiya lau 😊. (Hausa: I'm fine)",
-            "how you dey": "I dey kampe 💪 (Pidgin: I'm fine)",
-            "what is your name": "I'm BizBot Nigeria 🤖, your assistant for business and regulatory information in Nigeria.",
-            "why were you created": "I was built to help answer questions about Nigerian business and compliance matters."
-        }
-
-        for lang, phrases in greetings.items():
-            if user_msg in phrases:
-                answer = f"Hello 👋, welcome to BizBot Nigeria! ({lang.title()} greeting detected)"
-                db.save_conversation(
-                    session_id=request.session_id,
-                    user_message=request.message,
-                    bot_response=answer,
-                    confidence_score=None,
-                    sources_used=[]
-                )
-                return ChatResponse(response=answer, session_id=request.session_id, sources=[])
-
-        for key, reply in smalltalk.items():
-            if key in user_msg:
-                answer = reply
-                db.save_conversation(
-                    session_id=request.session_id,
-                    user_message=request.message,
-                    bot_response=answer,
-                    confidence_score=None,
-                    sources_used=[]
-                )
-                return ChatResponse(response=answer, session_id=request.session_id, sources=[])
-
-        result = rag.query(request.message)
-        logger.info(f"RAG result: {result}")
+        start_time = time.time()
+        result = rag.query(user_msg_english)
+        duration = time.time() - start_time
 
         if isinstance(result, dict):
             answer = result.get("answer", "").strip()
-            sources = result.get("sources", [])
+            sources = normalize_sources(result.get("sources", []))
             confidence = result.get("confidence_score")
         else:
             answer, sources, confidence = str(result), [], None
 
+         # Translate response back to user's language if needed
+        if detected_lang != "en" and answer:
+            answer_final = safe_translate(
+                answer,
+                source_lang="en",
+                target_lang=detected_lang
+            )
+            logger.info(f"Response translated back to {detected_lang}")
+        else:
+            answer_final = answer
+            logger.info("No translation needed, keeping English response")
+
         db.save_conversation(
             session_id=request.session_id,
-            user_message=request.message,
-            bot_response=answer,
+            user_message=user_msg_original,
+            bot_response=answer_final,
             confidence_score=confidence,
             sources_used=sources
         )
-
-        return ChatResponse(response=answer, session_id=request.session_id, sources=sources)
+        logger.info(f"Answered in {duration:.2f}s | Confidence={confidence}")
+        return ChatResponse(response=answer_final, 
+                            session_id=request.session_id, sources=sources)
 
     except Exception as e:
         logger.exception("Error in /chat endpoint")
-        raise HTTPException(status_code=500, detail=str(e))
+        error_msg = "Sorry, I encountered an error while processing your request. Please try again."
+        try:
+            if 'detected_lang' in locals() and detected_lang != "en":
+                error_msg = safe_translate(error_msg, "en", detected_lang)
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=error_msg)
 
 @app.get("/health")
 async def health_check():
@@ -125,3 +154,13 @@ async def health_check():
 async def get_history(session_id: str):
     history = db.get_chat_history(session_id)
     return {"history": history}
+
+@app.get("/stats")
+async def get_stats():
+    """Get RAG pipeline statistics"""
+    return rag.get_stats()
+
+@app.get("/health-detailed")
+async def detailed_health_check():
+    """Detailed health check including RAG pipeline"""
+    return rag.health_check()

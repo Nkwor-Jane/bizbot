@@ -76,7 +76,7 @@ An AI chatbot that:
 
 ## 🎬 Demo
 
-*Demo video and screenshots will be added upon completion*
+![Chat View](./docs/view.png)
 
 ## 📖 Usage
 
@@ -86,7 +86,7 @@ An AI chatbot that:
 
    ```bash
    git clone https://github.com/Nkwor-Jane/bizbot.git
-   cd bizbot/app
+   cd bizbot
 
 2. Create a virtual environment:
 
@@ -116,24 +116,6 @@ An AI chatbot that:
     ```bash
     POST http://localhost:8000/chat
 
-### 🖼️ Frontend Setup (NextJS)
-
-1. Navigate to frontend directory:
-
-    ``` bash
-    cd ../frontend
-
-2. Install dependencies:
-
-    ``` bash
-    npm install
-
-3. Start the development server:
-
-    ``` bash
-    npm run dev
-    Visit: http://localhost:5173
-
 ## 🤝 Contributing
 
 This project was developed as part of the AltSchool Africa Hackathon. Contributions and suggestions are welcome!
@@ -153,13 +135,9 @@ This project was developed as part of the AltSchool Africa Hackathon. Contributi
 - Nigerian government agencies for providing public business information
 - Open-source AI and ML communities for tools and frameworks
 
----
-
-**Note**: This project is currently under active development. Documentation will be updated as features are implemented.
-
 ## 📞 Contact
 
 For questions or feedback, please reach out.
 
 ---
-*Last Updated: [Current Date]*
+*Last Updated: [07-09-2025]*
