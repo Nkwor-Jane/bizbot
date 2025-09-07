@@ -61,6 +61,9 @@ export default function HistorySheet({
 
       // If deleted the current session is deleted, start a new chat
       if (sessionId === currentSessionId) startNewChat();
+      setOpen(false);
+
+      router.replace("/");
     } catch (error) {
       console.error("Error deleting session:", error);
     }
