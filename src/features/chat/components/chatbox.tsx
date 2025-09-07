@@ -77,7 +77,7 @@ export default function Chatbox() {
       // this means it's a new chat, so save the session_id
       if (session_id && !currentSessionId) await addNewSessionId(session_id);
 
-      console.log("Post Chat Response: ", { response, session_id, sources });
+      // console.log("Post Chat Response: ", { response, session_id, sources });
     } catch (error) {
       console.error("Error in chat submission:", error);
     }

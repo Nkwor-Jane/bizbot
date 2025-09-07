@@ -54,7 +54,7 @@ export default function ChatSessionManager() {
 
           // Add bot message if it exists
           if (item.bot_response) {
-            const parsedSources = parseSources(item.sources_used);
+            // const parsedSources = parseSources(item.sources_used);
 
             messages.push({
               id: `${currentSessionId}-bot-${index}`,
@@ -63,7 +63,7 @@ export default function ChatSessionManager() {
               timestamp: item.timestamp
                 ? new Date(item.timestamp).getTime()
                 : Date.now(),
-              sources: parsedSources,
+              sources: [],
             });
           }
 

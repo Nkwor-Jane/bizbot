@@ -68,6 +68,12 @@ export default function HistorySheet({
 
   const handleNewChat = () => {
     startNewChat();
+
+    // remove session_id param from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete("session_id");
+    router.replace(url.toString());
+
     setOpen(false);
   };
 
