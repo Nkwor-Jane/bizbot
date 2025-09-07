@@ -86,16 +86,39 @@ class JSONLoader:
                 data = json.load(f)
 
             documents = []
-            for item in data:
-                question = item.get("question", "")
-                answer = item.get("answer", "")
+            for i, item in enumerate(data):
+                question = item.get("question", "").strip()
+                answer = item.get("answer", "").strip()
                 source = item.get("source", "Nigerian Business Dataset")
 
-                # Treat each Q/A pair as one document
-                page_content = f"Question: {question}\nAnswer: {answer}"
-                documents.append(Document(page_content=page_content, metadata={"source": source}))
+                # Create separate documents for better retrieval
+                # Document 1: Question-focused for better matching
+                question_doc = Document(
+                    page_content=f"Q: {question}\nA: {answer}",
+                    metadata={
+                        "source": source,
+                        "type": "qa_pair",
+                        "question": question,
+                        "answer": answer,
+                        "index": i
+                    }
+                )
+                
+                # Document 2: Answer-focused for context
+                answer_doc = Document(
+                    page_content=f"Answer: {answer}\nRelated Question: {question}",
+                    metadata={
+                        "source": source,
+                        "type": "answer_focused",
+                        "question": question,
+                        "answer": answer,
+                        "index": i
+                    }
+                )
+                
+                documents.extend([question_doc, answer_doc])
 
-            logger.info(f"Loaded {len(documents)} Q&A pairs from JSON")
+            logger.info(f"Loaded {len(documents)} documents from {len(data)} Q&A pairs")
             return documents
 
         except Exception as e:
@@ -196,10 +219,35 @@ class RAGPipeline:
         self.query_count = 0
         self.total_cost = 0.0
         self.kb_type = None 
+        self.qa_lookup = {}  # Direct lookup for exact matches
         
         logger.info("Nebius AI Studio initialized with Meta-Llama-3.1-8B-Instruct")
         
-        # Optimized Llama 3.1 prompt template
+        # Improved JSON prompt template
+        self.prompt_template_json = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+You are BizBot Nigeria, an AI assistant specializing in Nigerian business regulations and procedures.
+
+Instructions for Q&A dataset responses:
+1. FIRST check if the context contains a direct answer to the user's question
+2. If you find a direct answer, provide it exactly as written in the dataset
+3. If no exact match, synthesize information from multiple relevant Q&A pairs
+4. Always cite sources when available
+5. If no relevant information exists, clearly state this limitation
+6. Be concise and professional in your responses
+<|eot_id|>
+
+<|start_header_id|>user<|end_header_id|>
+Context from knowledge base:
+{context}
+
+User Question: {question}
+
+Please provide a direct answer based on the context above.
+<|eot_id|>
+
+<|start_header_id|>assistant<|end_header_id|>"""
+
+        # Regular prompt for non-JSON sources
         self.prompt_template = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 You are BizBot Nigeria, an AI assistant specializing in Nigerian business regulations and procedures. You provide accurate, step-by-step guidance based on official government sources.
 
@@ -221,30 +269,30 @@ Question: {question}
 
 <|start_header_id|>assistant<|end_header_id|>"""
 
-        self.prompt_template_json = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are BizBot Nigeria, an AI assistant specializing in Nigerian business regulations and procedures.
-
-Guidelines when using a structured Q&A knowledge base:
-- Prefer giving the exact **answer text** from the dataset whenever possible
-- Do not invent information that is not in the dataset
-- If multiple relevant answers exist, summarize them clearly
-- If no answer exists, say: "This information is not available in my current knowledge base"
-- Always cite the source(s) if available
-<|eot_id|>
-
-<|start_header_id|>user<|end_header_id|>
-Knowledge base context:
-{context}
-
-Question: {question}
-<|eot_id|>
-
-<|start_header_id|>assistant<|end_header_id|>"""
-
-
-    # -------------------------------
-    # Knowledge Base Setup
-    # -------------------------------
+    def _build_qa_lookup(self, documents):
+        """Build a direct lookup dictionary for exact question matches"""
+        self.qa_lookup = {}
+        
+        for doc in documents:
+            if doc.metadata.get("type") == "qa_pair":
+                question = doc.metadata.get("question", "").lower().strip()
+                answer = doc.metadata.get("answer", "").strip()
+                source = doc.metadata.get("source", "")
+                
+                # Store multiple variations of the question
+                self.qa_lookup[question] = {
+                    "answer": answer,
+                    "source": source,
+                    "original_question": doc.metadata.get("question", "")
+                }
+                
+                # Also store without punctuation
+                clean_question = question.replace("?", "").replace(".", "").replace(",", "")
+                self.qa_lookup[clean_question] = {
+                    "answer": answer,
+                    "source": source,
+                    "original_question": doc.metadata.get("question", "")
+                }
 
     def setup_knowledge_base(self, documents_path: str = "data/scraped_content/business_knowledge_base.txt"):
         """Setup knowledge base optimized for Llama 3.1"""
@@ -255,6 +303,8 @@ Question: {question}
             if documents_path.endswith(".json"):
                 documents = JSONLoader.load_json(documents_path)
                 self.kb_type = "json"
+                # Build direct lookup for JSON data
+                self._build_qa_lookup(documents)
             elif documents_path.endswith(".pdf"):
                 documents = ImprovedPDFLoader.load_pdf(documents_path, preferred_method="pymupdf")
                 self.kb_type = "pdf"
@@ -265,13 +315,24 @@ Question: {question}
             if not documents:
                 documents = self._create_nigerian_business_data()
             
-            # Text splitting
-            text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=800,
-                chunk_overlap=100,
-                length_function=len,
-                separators=["\n\n", "\n", ". ", ".", " ", ""]
-            )
+            # Optimize text splitting for JSON Q&A pairs
+            if self.kb_type == "json":
+                # For Q&A pairs, use larger chunks and avoid splitting on question marks
+                text_splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=1000,  # chunks for Q&A pairs
+                    chunk_overlap=100,
+                    length_function=len,
+                    separators=["\n\n", "\n", ". ",  " ", ""]
+                )
+            else:
+                # Standard chunking for other document types
+                text_splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=800,
+                    chunk_overlap=100,
+                    length_function=len,
+                    separators=["\n\n", "\n", ". ", ".", " ", ""]
+                )
+                
             texts = text_splitter.split_documents(documents)
             logger.info(f"Created {len(texts)} document chunks")
             
@@ -283,26 +344,27 @@ Question: {question}
             os.makedirs(vector_store_path, exist_ok=True)
             self.vector_store.save_local(vector_store_path)
             
-            # Setup QA chain
-            # Select prompt based on data source
+            # Setup QA chain with improved retrieval
             if documents_path.endswith(".json"):
                 prompt = PromptTemplate(
                     template=self.prompt_template_json,
                     input_variables=["context", "question"]
                 )
+                # Use more aggressive retrieval for Q&A pairs
+                retriever_kwargs = {"k": 8, "fetch_k": 30, "lambda_mult": 0.3}
             else:
                 prompt = PromptTemplate(
                     template=self.prompt_template,
                     input_variables=["context", "question"]
                 )
-
+                retriever_kwargs = {"k": 4, "fetch_k": 12, "lambda_mult": 0.7}
             
             self.qa_chain = RetrievalQA.from_chain_type(
                 llm=self.llm,
                 chain_type="stuff",
                 retriever=self.vector_store.as_retriever(
                     search_type="mmr",
-                    search_kwargs={"k": 4, "fetch_k": 12, "lambda_mult": 0.7}
+                    search_kwargs=retriever_kwargs
                 ),
                 chain_type_kwargs={"prompt": prompt},
                 return_source_documents=True
@@ -310,11 +372,71 @@ Question: {question}
             
             setup_time = time.time() - start_time
             logger.info(f"Knowledge base setup completed in {setup_time:.2f}s")
+            logger.info(f"Built direct lookup with {len(self.qa_lookup)} entries")
             
         except Exception as e:
             logger.error(f"Setup error: {e}")
             raise e
 
+    def _exact_match_lookup(self, question: str) -> Dict:
+        """Try to find exact matches in the Q&A lookup"""
+        question_clean = question.lower().strip()
+        
+        # Try exact match first
+        if question_clean in self.qa_lookup:
+            result = self.qa_lookup[question_clean]
+            return {
+                "answer": result["answer"],
+                "sources": [result["source"]] if result["source"] else ["Nigerian Business Dataset"],
+                "confidence": "high",
+                "confidence_score": 1.0,
+                "cost": 0.0,
+                "response_time": 0.01,
+                "match_type": "exact"
+            }
+        
+        # Try without punctuation
+        question_no_punct = question_clean.replace("?", "").replace(".", "").replace(",", "").strip()
+        if question_no_punct in self.qa_lookup:
+            result = self.qa_lookup[question_no_punct]
+            return {
+                "answer": result["answer"],
+                "sources": [result["source"]] if result["source"] else ["Nigerian Business Dataset"],
+                "confidence": "high",
+                "confidence_score": 0.95,
+                "cost": 0.0,
+                "response_time": 0.01,
+                "match_type": "exact_no_punct"
+            }
+        
+        # Try fuzzy matching for similar questions
+        for stored_question, result in self.qa_lookup.items():
+            # Simple word overlap check
+            question_words = set(question_no_punct.split())
+            stored_words = set(stored_question.split())
+            # Remove common stop words for better matching
+            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'can', 'could', 'should', 'would', 'will', 'shall', 'may', 'might', 'must', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'my', 'your', 'his', 'her', 'our', 'their'}
+
+            question_words = question_words - stop_words
+            stored_words = stored_words - stop_words
+
+            overlap = len(question_words.intersection(stored_words))
+            total_words = len(question_words.union(stored_words))
+            
+            if total_words > 0:
+                similarity = overlap / total_words
+                if similarity > 0.6:  # lower similarity threshold
+                    return {
+                        "answer": result["answer"],
+                        "sources": [result["source"]] if result["source"] else ["Nigerian Business Dataset"],
+                        "confidence": "high",
+                        "confidence_score": round(similarity, 2),
+                        "cost": 0.0,
+                        "response_time": 0.01,
+                        "match_type": f"fuzzy_match_{similarity:.2f}"
+                    }
+        
+        return None
     
     def classify_query_type(self, question: str) -> str:
         """Classify query type: business, greeting, or other"""
@@ -368,46 +490,46 @@ Question: {question}
             # Yoruba greeting
             response = """Ẹ ku aaro! (Good morning!) / Ẹ ku ọsan! (Good afternoon!)
 
-    Mo jẹ́ BizBot Nigeria - oluranlowo ti o le ran yin lowo pelu awon ibeere nipa eto isowo ni Nigeria.
+Mo jẹ́ BizBot Nigeria - oluranlowo ti o le ran yin lowo pelu awon ibeere nipa eto isowo ni Nigeria.
 
-    I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
+I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
 
-    How can I help you with your business needs today?"""
+How can I help you with your business needs today?"""
             
         elif any(word in question_lower for word in ['ndewo', 'kedu', 'nno', 'ụtụtụ']):
             # Igbo greeting  
             response = """Ndewo! Kedu ka ị mere?
 
-    Abụ m BizBot Nigeria - onye inyeaka nke nwere ike inyere gị aka na ajụjụ gbasara usoro azụmahịa na Nigeria.
+Abụ m BizBot Nigeria - onye inyeaka nke nwere ike inyere gị aka na ajụjụ gbasara usoro azụmahịa na Nigeria.
 
-    I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
+I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
 
-    How can I help you with your business needs today?"""
+How can I help you with your business needs today?"""
             
         elif any(word in question_lower for word in ['sannu', 'ina kwana', 'ina gari', 'barka']):
             # Hausa greeting
             response = """Sannu! Ina gari?
 
-    Ni ne BizBot Nigeria - mataimaki da zai iya taimaka muku da tambayoyi game da hanyoyin kasuwanci a Nigeria.
+Ni ne BizBot Nigeria - mataimaki da zai iya taimaka muku da tambayoyi game da hanyoyin kasuwanci a Nigeria.
 
-    I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
+I am BizBot Nigeria - an assistant that can help you with questions about business procedures in Nigeria.
 
-    How can I help you with your business needs today?"""
+How can I help you with your business needs today?"""
             
         else:
             # English greeting
             response = """Hello! How are you doing?
 
-    I am BizBot Nigeria - your AI assistant for Nigerian business regulations and procedures.
+I am BizBot Nigeria - your AI assistant for Nigerian business regulations and procedures.
 
-    I can help you with:
-    • Company registration with CAC
-    • Tax requirements with FIRS  
-    • Banking procedures
-    • Business licenses and permits
-    • Regulatory compliance
+I can help you with:
+• Company registration with CAC
+• Tax requirements with FIRS  
+• Banking procedures
+• Business licenses and permits
+• Regulatory compliance
 
-    What business question can I help you with today?"""
+What business question can I help you with today?"""
         
         return {
             "answer": response,
@@ -423,14 +545,14 @@ Question: {question}
         return {
             "answer": """I'm BizBot Nigeria, specialized in helping with Nigerian business regulations and procedures.
 
-    I can assist you with:
-    • Company and business name registration
-    • Tax obligations and FIRS requirements
-    • Banking and financial procedures  
-    • Business licenses and permits
-    • CAC processes and requirements
+I can assist you with:
+• Company and business name registration
+• Tax obligations and FIRS requirements
+• Banking and financial procedures  
+• Business licenses and permits
+• CAC processes and requirements
 
-    Please ask me a question about Nigerian business procedures, and I'll be happy to help!""",
+Please ask me a question about Nigerian business procedures, and I'll be happy to help!""",
             
             "sources": [],
             "confidence": "high", 
@@ -440,7 +562,7 @@ Question: {question}
         }
 
     def query(self, question: str) -> Dict:
-        """Hybrid query: JSON direct answers when confident, otherwise LLM QA."""
+        """Enhanced query with better JSON handling"""
 
         # First classify the query type
         query_type = self.classify_query_type(question)
@@ -450,34 +572,50 @@ Question: {question}
         elif query_type == "other":
             return self.handle_non_business_query(question)
     
-        # --------------------------
-        # JSON Knowledge Base Mode
-        # --------------------------
-        if self.kb_type == "json" and self.vector_store:
-            # Retrieve top matches
-            docs = self.vector_store.similarity_search_with_score(question, k=2)
+        # JSON Knowledge Base Mode with exact matching
+        if self.kb_type == "json":
+            # Try exact match first
+            exact_result = self._exact_match_lookup(question)
+            if exact_result:
+                logger.info(f"Found exact match: {exact_result['match_type']}")
+                return exact_result
 
-            if docs:
-                best_doc, score = docs[0]  # doc + similarity score
-                logger.info(f"JSON similarity score: {score:.4f}")
-
-                # Threshold: if similarity high, trust JSON
-                if score > 0.7:
-                    return {
-                        "answer": best_doc.page_content.split("Answer:")[-1].strip(),
-                        "sources": [best_doc.metadata.get("source", "Nigerian Business Dataset")],
-                        "confidence": "high",
-                        "confidence_score": round(score, 2),
-                        "cost": 0.0,
-                        "response_time": 0.01
-                    }
-
-                # Otherwise → fall back to LLM
+            # If no exact match, try vector search with higher threshold
+            if self.vector_store:
+                docs = self.vector_store.similarity_search_with_score(question, k=3)
+                
+                if docs:
+                    best_doc, score = docs[0]
+                    logger.info(f"Vector similarity score: {score:.4f}")
+                    
+                    # Lower threshold since we want to catch more relevant answers
+                    if score < 0.8:  # Adjust threshold for JSON data
+                        # Extract answer from the document
+                        content = best_doc.page_content
+                        
+                        # Try to extract clean answer
+                        if "A: " in content:
+                            answer = content.split("A: ", 1)[1].strip()
+                        elif "Answer: " in content:
+                            answer = content.split("Answer: ", 1)[1].strip()
+                            if "\nRelated Question:" in answer:
+                                answer = answer.split("\nRelated Question:")[0].strip()
+                        else:
+                            answer = content.strip()
+                        
+                        return {
+                            "answer": answer,
+                            "sources": [best_doc.metadata.get("source", "Nigerian Business Dataset")],
+                            "confidence": "high" if score > 0.4 else "medium",
+                            "confidence_score": round(1 - score, 2), # COnvert distance to similairity
+                            "cost": 0.0,
+                            "response_time": 0.02,
+                            "match_type": "vector_search"
+                        }
+                
                 logger.info("Low similarity, falling back to LLM chain...")
 
-        # --------------------------
-        # PDF/Text Knowledge Base Mode
-        # --------------------------
+        # Fallback to LLM QA chain
         if not self.qa_chain:
             return {
                 "answer": "Knowledge base not initialized. Please contact support.",
@@ -487,7 +625,6 @@ Question: {question}
                 "response_time": 0.0
             }
 
-        # LLM QA chain (works for both PDF or JSON fallback)
         start_time = time.time()
         self.query_count += 1
 
@@ -635,7 +772,8 @@ Question: {question}
             "avg_cost_per_query": round(self.total_cost / max(self.query_count, 1), 4),
             "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
             "provider": "Nebius AI Studio",
-            "status": "active"
+            "status": "active",
+            "qa_lookup_size": len(self.qa_lookup)
         }
     
     def _create_nigerian_business_data(self):

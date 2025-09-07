@@ -37,12 +37,12 @@ An AI chatbot that:
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Python
-- **AI Framework**: LangChain
-- **Vector Database**: [To be implemented]
-- **LLM**: [To be implemented]
-- **Frontend**: [To be implemented]
-- **Deployment**: [To be implemented]
+- **Backend**: FastAPI, Python
+- **Frontend**: NextJS, JavaScript
+- **AI Framework**: LangChain, Nebius AI Studio
+- **Vector Database**: FAISS
+- **LLM**: Meta-Llama-3.1-8B
+- **Embedding Model**: BGE-Multilingual
 
 ## 📊 Data Sources
 
@@ -51,7 +51,7 @@ An AI chatbot that:
 - Central Bank of Nigeria (CBN) regulations
 - Nigerian Export Promotion Council (NEPC) trade guides
 - Small and Medium Enterprises Development Agency (SMEDAN) resources
-- [Additional sources to be added]
+- Questions from business owners and enterpreneurs
 
 ## 🏗️ Architecture
 
@@ -59,7 +59,7 @@ An AI chatbot that:
 [User Query] → [Web Interface] → [RAG Pipeline] → [Vector Database] → [LLM] → [Response]
 ```
 
-*Detailed architecture diagram to be added*
+![RAG Pipeline](./docs/rag_pipeline.png)
 
 ## 📋 Project Status
 
@@ -67,12 +67,12 @@ An AI chatbot that:
 
 - [x] Project conceptualization
 - [x] Initial documentation
-- [ ] Data collection and preprocessing
-- [ ] RAG pipeline development
-- [ ] Model integration
-- [ ] Frontend development
-- [ ] Testing and evaluation
-- [ ] Deployment
+- [x] Data collection and preprocessing
+- [x] RAG pipeline development
+- [x] Model integration
+- [x] Frontend development
+- [x] Testing and evaluation
+- [x] Deployment
 
 ## 🎬 Demo
 
@@ -80,19 +80,70 @@ An AI chatbot that:
 
 ## 📖 Usage
 
-*Usage instructions will be provided once the application is built*
+### 🔧 Backend Setup (FastAPI)
+
+1. **Clone the repo:**
+
+   ```bash
+   git clone https://github.com/Nkwor-Jane/bizbot.git
+   cd bizbot/app
+
+2. Create a virtual environment:
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # or venv\Scripts\activate on Windows
+
+3. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+
+4. Create .env file:
+
+   ```bash
+    SUPABASE_DATABASE_PASSWORD=********
+    DATABASE_URL=postgresql://postgres**********************
+    OPEN_API_KEY= *********************
+
+5. Run the server:
+
+    ```bash
+    uvicorn main:app 
+
+6. API Endpoint:
+
+    ```bash
+    POST http://localhost:8000/chat
+
+### 🖼️ Frontend Setup (NextJS)
+
+1. Navigate to frontend directory:
+
+    ``` bash
+    cd ../frontend
+
+2. Install dependencies:
+
+    ``` bash
+    npm install
+
+3. Start the development server:
+
+    ``` bash
+    npm run dev
+    Visit: http://localhost:5173
 
 ## 🤝 Contributing
 
 This project was developed as part of the AltSchool Africa Hackathon. Contributions and suggestions are welcome!
 
-## 📝 License
-
-[License to be determined]
-
 ## 👥 Team
 
-- **Developer**: Adetokun Adenike, Nkwor Jane, Osezele Ejemen
+- **Developers**
+  - **Data**: Adetokun Adenike
+  - **Backend Developer**: Nkwor Jane
+  - **Frontend Developer**: Osezele Ejemen
 - **Institution**: AltSchool Africa
 - **Hackathon**: AltSchool AFrica Hackathon
 

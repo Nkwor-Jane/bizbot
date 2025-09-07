@@ -7,3 +7,5 @@ __pycache/
 *.db
 .env
 *.log
+data/vector_store/index.faiss
+data/vector_store/index.pkl
