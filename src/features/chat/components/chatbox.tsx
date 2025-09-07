@@ -57,7 +57,6 @@ export default function Chatbox() {
       removeNotification();
     }
   }, [form.formState.errors.question?.message]);
-  console.log("Field Error:", form.formState.errors.question?.message);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     // Add User's message to the chat context
