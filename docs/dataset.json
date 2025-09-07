@@ -230,7 +230,7 @@
         "source": "https://www.cac.gov.ng"
     },
     {
-        "question": "CAC Registration Expert",
+        "question": "How do I contact a CAC Registration Expert?",
         "answer": "You can contact a CAC registration expert through the following means: \uf0b7 WhatsApp: +234 802 871 6801 \uf0b7 Email: adenikecac@gmail.com",
         "source": "CAC Registration Expert"
     },
@@ -413,5 +413,10 @@
         "question": "Is it within the law for a state tax authority to charge interest, penalty and threaten distrainment for a shortfall between the PAYE remitted by a company and the expectation on the company`s tax deduction cards, going by the fact that actual tax could differ from expectations as a result of salary cuts and staff exits?",
         "answer": "It is lawful for a state tax authority to carry out audit of your returns to ascertain compliance. It is also lawful for penalty to be charged on any shortfall. It should be noted however that there must be reconciliation meeting by both parties where all issues must be discussed and agreed. Where a taxpayer is still not pleased with the decision reached, the taxpayer has the powers as conferred by the PITA (as amended) to appeal to the Tax Appeal Tribunal.",
         "source": "https://www.firs.gov.ng/"
+    },
+    {
+    "question": "How can a caterer register a business in Nigeria?",
+    "answer": "As a caterer, you can register as a Business Name (sole proprietor) with CAC. You will need: valid ID, passport photo, business name, and ₦10,000 for registration. After registration, apply for FIRS TIN, and obtain a food handling permit from NAFDAC or your local government.",
+    "source": "CAC & NAFDAC Guidelines 2024"
     }
 ]

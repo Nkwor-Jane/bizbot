@@ -15,3 +15,5 @@ psycopg2-binary
 python-dotenv 
 alembic
 langchain-openai
+langdetect 
+deep-translator

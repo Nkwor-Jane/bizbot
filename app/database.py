@@ -1,9 +1,10 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, Text, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.sql import func
 from typing import Generator
 import os
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -65,9 +66,53 @@ class ChatDatabase:
     def create_tables(self):
         """Create all tables - run this once"""
         Base.metadata.create_all(bind=engine)
+
+    def _serialize_sources(self, sources):
+        """Convert sources to JSON string safely"""
+        if sources is None:
+            return None
+
+        # Already a JSON string
+        if isinstance(sources, str):
+            try:
+                json.loads(sources)  # validate JSON
+                return sources       # keep as-is
+            except json.JSONDecodeError:
+                return json.dumps([{"source": sources}])
+
+        # List of items
+        if isinstance(sources, list):
+            clean_sources = []
+            for source in sources:
+                if isinstance(source, dict):
+                    # Already a dict, keep as-is
+                    clean_sources.append(source)
+                elif isinstance(source, str):
+                    clean_sources.append({"source": source})
+                else:
+                    clean_sources.append({"source": str(source)})
+            return json.dumps(clean_sources)
+
+        # Single dict
+        if isinstance(sources, dict):
+            return json.dumps([sources])
+
+        # Fallback
+        return json.dumps([{"source": str(sources)}])
+
+    def _deserialize_sources(self, sources_json):
+        """Convert JSON string back to Python object safely"""
+        if sources_json is None:
+            return []
+        
+        try:
+            return json.loads(sources_json)
+        except json.JSONDecodeError:
+            # Fallback to empty list if JSON is invalid
+            return []
     
     def save_conversation(self, session_id: str, user_message: str, bot_response: str, 
-                         confidence_score: str = None, sources_used: str = None):
+                         confidence_score: str = None, sources_used = None):
         """Save a conversation to the database"""
         db = self.SessionLocal()
         try:
@@ -78,13 +123,18 @@ class ChatDatabase:
                 db.add(session)
                 db.commit()
             
+            # Serialize sources to JSON
+            sources_json = self._serialize_sources(sources_used)
+            
+
             # Save message
             message = Message(
                 session_id=session_id,
                 user_message=user_message,
                 bot_response=bot_response,
-                confidence_score=confidence_score,
-                sources_used=sources_used
+                # confidence_score=confidence_score,
+                confidence_score=str(confidence_score) if confidence_score is not None else None,
+                sources_used=sources_json
             )
             db.add(message)
             db.commit()
@@ -111,7 +161,7 @@ class ChatDatabase:
                     "bot_response": msg.bot_response,
                     "timestamp": msg.timestamp.isoformat(),
                     "confidence_score": msg.confidence_score,
-                    "sources_used": msg.sources_used
+                    "sources_used": self._deserialize_sources(msg.sources_used)
                 }
                 for msg in reversed(messages) 
             ]

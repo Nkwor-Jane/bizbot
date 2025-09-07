@@ -34,7 +34,7 @@ if prompt := st.chat_input("Ask me about Nigerian business regulations..."):
         with st.spinner("Thinking..."):
             try:
                 response = requests.post(
-                    "http://localhost:8000/chat",
+                    "http://localhost:8001/chat",
                     json={
                         "message": prompt,
                         "session_id": st.session_state.session_id
