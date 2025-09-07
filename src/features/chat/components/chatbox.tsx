@@ -43,7 +43,7 @@ export default function Chatbox() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: { question: "" },
-    mode: "onSubmit",
+    mode: "onTouched",
   });
 
   // If there is an error, show it as a notification
@@ -57,6 +57,7 @@ export default function Chatbox() {
       removeNotification();
     }
   }, [form.formState.errors.question?.message]);
+  console.log("Field Error:", form.formState.errors.question?.message);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     // Add User's message to the chat context
@@ -68,7 +69,7 @@ export default function Chatbox() {
 
       const { response, session_id, sources } = await postChat(requestData);
 
-      form.reset();
+      form.reset({ question: "" }, { keepErrors: false, keepDirty: false });
 
       // Add AI's message to the chat context
       addChatMessage({ text: response, sender: "ai", sources });
