@@ -1,7 +1,7 @@
 # BizBot 🤖💼
 
 AI-powered business assistant built for the **AltSchool ML Hackathon 2025**.
-BizBot is an intelligent platform that enables individuals to engage with data in a conversational way. 
+BizBot is an intelligent platform that enables individuals to engage with data in a conversational way.
 Designed to improve productivity, it offers valuable insights into Nigerian businesses while also providing practical guidance for starting one.
 
 ---
@@ -20,8 +20,9 @@ BizBot is designed to:
 
 - **Frontend:** Next.js 15, React, TypeScript, TailwindCSS, ShadCN UI, Framer Motion
 - **State Management:** Context API + useReducer, React Query (TanStack)
-- **Backend:** Node.js/Express
-- **Database:** MongoDB
+- **Backend:** FastAPI, Python
+- **AI Engine:** Langchain, RAG Pipeline, Nebius AI Studio
+- **Database:** PostgresSQL
 - **APIs & Tools:** Axios, IndexedDB
 
 ---
@@ -33,7 +34,7 @@ BizBot is designed to:
   ├── app/              # Next.js app router (routes, layouts, pages)
   ├── components/       # Shared UI + layout components (buttons, modals, navbar)
   ├── features/         # Feature-specific modules
-  │   ├── chat/         
+  │   ├── chat/
   │   │   ├── components/
   │   │   ├── context/
   │   │   ├── db/
@@ -78,7 +79,6 @@ BizBot is designed to:
     <td><img src="./public/previews/chat-4.png" alt="Preview of End of AI Response" width="100%"></td>
   </tr>
 </table>
-
 
 ---
 
