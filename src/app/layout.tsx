@@ -55,7 +55,7 @@ export const metadata: Metadata = {
       "BizBot helps teams and individuals chat with data, explore Nigerian businesses, and learn how to start one. Boost productivity through an intuitive chat-based interface.",
     images: [
       {
-        url: "https://cdn.sanity.io/media-libraries/mlu3DBU0QaKb/images/4df501056db70693bf909e15fb4e0d44f1fda033-5760x3240.png",
+        url: "hhttps://cdn.sanity.io/media-libraries/mlu3DBU0QaKb/images/88c73ad37691e270daf9a6612d7b9759259aca9e-5760x3240.png",
         width: 1200,
         height: 630,
         alt: "BizBot — Chat with Data and Explore Nigerian Businesses",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     description:
       "Chat with data, explore Nigerian businesses, and learn how to set one up — with BizBot’s intuitive interface.",
     images: [
-      "https://cdn.sanity.io/media-libraries/mlu3DBU0QaKb/images/4df501056db70693bf909e15fb4e0d44f1fda033-5760x3240.png",
+      "hhttps://cdn.sanity.io/media-libraries/mlu3DBU0QaKb/images/88c73ad37691e270daf9a6612d7b9759259aca9e-5760x3240.png",
     ],
   },
 };
