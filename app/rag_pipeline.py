@@ -236,6 +236,13 @@ Instructions for Q&A dataset responses:
 4. Always cite sources when available
 5. If no relevant information exists, clearly state this limitation
 6. Be concise and professional in your responses
+
+For questions about "agents" or "where to get agents":
+- Explain that CAC has authorized business registration agents/consultants
+- Provide contact information for CAC offices
+- Mention online registration options
+- Suggest visiting CAC website or calling their helpline
+- Advise verifying agent credentials with CAC
 <|eot_id|>
 
 <|start_header_id|>user<|end_header_id|>
@@ -253,6 +260,12 @@ Please provide a direct answer based on the context above.
         self.prompt_template = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 You are BizBot Nigeria, an AI assistant specializing in Nigerian business regulations and procedures. You provide accurate, step-by-step guidance based on official government sources.
 
+CRITICAL LANGUAGE REQUIREMENT:
+- ALWAYS respond in English only
+- Never respond in Dutch, French, or any other foreign language
+- You serve Nigerian businesses and must communicate in English
+- If the user greets you in a Nigerian language, respond with a greeting in that language, then continue in English
+
 Core Guidelines:
 - Answer ONLY based on the provided context
 - If information is missing, clearly state "This information is not available in my current knowledge base"
@@ -264,6 +277,11 @@ Core Guidelines:
 - If user mentions a role, map it to the most relevant Nigerian business type (e.g., caterer → food services business → Business Name or Company registration with CAC).
 - Provide step-by-step instructions for registration, including required documents, costs, and regulatory agencies.
 - Always cite sources if available.
+
+For "agent" related questions:
+- Direct users to CAC-authorized business registration agents
+- Provide CAC contact information
+- Mention both online and offline registration options
 
 Question: {question}
 <|eot_id|>
@@ -312,10 +330,6 @@ Question: {question}
             else:
                 raise ValueError("Unsupported file type. Use .pdf or .json")
 
-            # Fallback if no docs
-            if not documents:
-                documents = self._create_nigerian_business_data()
-            
             # Optimize text splitting for JSON Q&A pairs
             if self.kb_type == "json":
                 # For Q&A pairs, use larger chunks and avoid splitting on question marks
@@ -379,11 +393,53 @@ Question: {question}
             logger.error(f"Setup error: {e}")
             raise e
 
+    def _handle_agent_query(self, question: str) -> Dict:
+        """Handle specific queries about finding agents"""
+        agent_response = """To find authorized business registration agents in Nigeria:
+
+**Official CAC Agents:**
+• Visit any CAC office nationwide for a list of authorized agents
+• Check the CAC website: www.cac.gov.ng for certified consultants
+• Call CAC helpline: 0700-CALL-CAC (0700-2255-222)
+
+**CAC Office Locations:**
+• **Abuja Head Office**: Plot 420, Tigris Crescent, Maitama, Abuja
+• **Lagos Office**: 22, Dipo Olubi Street, GRA, Ikeja, Lagos
+• **Port Harcourt**: 22 Azikiwe Road, Port Harcourt
+• **Kano**: Audu Bako Secretariat, Kano
+
+**Self-Registration Options:**
+• Online registration at: https://pre.cac.gov.ng
+• Visit CAC offices directly for assistance
+
+**What Agents Can Help With:**
+• Business name registration
+• Company incorporation 
+• Document preparation and submission
+• Status tracking and certificate collection
+
+**Important:** Only use CAC-authorized agents to avoid fraud. Verify agent credentials before making payments."""
+        
+        return {
+            "answer": agent_response,
+            "sources": [{"source": "CAC Official Guidelines", "excerpt": "CAC authorized agent information"}],
+            "confidence": "high",
+            "confidence_score": 0.95,
+            "cost": 0.0,
+            "response_time": 0.01,
+            "match_type": "agent_specific"
+        }
+
     def _exact_match_lookup(self, question: str) -> Dict:
         """Try to find exact matches in the Q&A lookup"""
         question_clean = question.lower().strip()
+
+        # Check if it's an agent-related query first
+        agent_keywords = ['agent', 'consultant', 'help', 'assistance', 'where do i get', 'where can i find']
+        if any(keyword in question_clean for keyword in agent_keywords):
+            return self._handle_agent_query(question)
         
-        # Try exact match first
+        # Then try exact match
         if question_clean in self.qa_lookup:
             result = self.qa_lookup[question_clean]
             return {
@@ -440,7 +496,7 @@ Question: {question}
         return None
     
     def classify_query_type(self, question: str) -> str:
-        """Classify query type: business, greeting, or other"""
+        """Classify query type: business, or greeting"""
         question_lower = question.lower().strip()
         
         # Nigerian language greetings
@@ -476,11 +532,7 @@ Question: {question}
         if any(greeting in question_lower for greeting in all_greetings):
             return "greeting"
         
-        # Check for business queries
-        if any(keyword in question_lower for keyword in business_keywords):
-            return "business"
-        
-        return "other"
+        return "business"
 
     def handle_greeting(self, question: str) -> Dict:
         """Handle greetings in multiple Nigerian languages"""
@@ -541,27 +593,6 @@ What business question can I help you with today?"""
             "response_time": 0.01
         }
 
-    def handle_non_business_query(self, question: str) -> Dict:
-        """Handle non-business queries politely"""
-        return {
-            "answer": """I'm BizBot Nigeria, specialized in helping with Nigerian business regulations and procedures.
-
-I can assist you with:
-• Company and business name registration
-• Tax obligations and FIRS requirements
-• Banking and financial procedures  
-• Business licenses and permits
-• CAC processes and requirements
-
-Please ask me a question about Nigerian business procedures, and I'll be happy to help!""",
-            
-            "sources": [],
-            "confidence": "low", 
-            "confidence_score": 0.2,
-            "cost": 0.0,
-            "response_time": 0.01
-        }
-
     def _preprocess_question(self, question):
         """
         Normalize role-specific queries into more general business registration terms.
@@ -597,16 +628,7 @@ Please ask me a question about Nigerian business procedures, and I'll be happy t
 
         if query_type == "greeting":
             return self.handle_greeting(normalized_question)
-        elif query_type == "other":
-            if self.kb_type == "json":
-                exact_result = self._exact_match_lookup(normalized_question)
-                if exact_result:
-                    logger.info("Found exact match despite 'other' classification")
-                    if detected_role:
-                        exact_result["answer"] += f"\n\n(Adapted for your role: {detected_role})"
-                    return exact_result
         
-            return self.handle_non_business_query(normalized_question)
     
         # JSON Knowledge Base Mode with exact matching
         if self.kb_type == "json":
@@ -686,7 +708,6 @@ Please ask me a question about Nigerian business procedures, and I'll be happy t
                     }
                     for doc in result["source_documents"]
                 ]
-                # confidence_score = self._calculate_confidence(result["source_documents"], question)
             response_time = time.time() - start_time
             answer = result["result"]
             if detected_role:
@@ -819,205 +840,3 @@ Please ask me a question about Nigerian business procedures, and I'll be happy t
             "status": "active",
             "qa_lookup_size": len(self.qa_lookup)
         }
-    
-    def _create_nigerian_business_data(self):
-        """Comprehensive Nigerian business knowledge base"""
-        from langchain.schema import Document
-        
-        return [
-            Document(
-                page_content="""
-                BUSINESS REGISTRATION WITH CORPORATE AFFAIRS COMMISSION (CAC)
-                
-                CAC is Nigeria's official business registration body. Location: Plot 420, Tigris Crescent, Maitama, Abuja.
-                
-                TYPES OF BUSINESS ENTITIES:
-                1. Business Name (Sole Proprietorship) - ₦10,000
-                2. Partnership - ₦10,000  
-                3. Private Limited Company (Ltd) - ₦15,000
-                4. Public Limited Company (Plc) - ₦50,000
-                5. Limited Liability Partnership (LLP) - ₦20,000
-                
-                PRIVATE LIMITED COMPANY REGISTRATION PROCESS:
-                
-                Step 1: Name Search & Reservation
-                - Complete Form CAC 1.1
-                - Pay ₦500 for name search
-                - Get name availability within 24 hours
-                
-                Step 2: Document Preparation
-                Required documents:
-                - Form CAC 2.1 (Memorandum & Articles)
-                - Form CAC 7 (Particulars of Directors)
-                - Evidence of address for directors
-                - Valid ID copies of shareholders/directors
-                - Passport photographs
-                
-                Step 3: Payment & Submission
-                - Authorized share capital up to ₦1,000,000: ₦10,000
-                - ₦1,000,001 - ₦5,000,000: ₦15,000
-                - Above ₦5,000,000: ₦20,000
-                - Processing time: 3-5 working days
-                
-                POST-INCORPORATION REQUIREMENTS:
-                1. Tax Identification Number (TIN) registration with FIRS
-                2. VAT registration (if turnover > ₦25M)
-                3. PAYE registration for employees
-                4. PENCOM registration for employees' pension
-                5. NSITF registration for employees' insurance
-                
-                CAC CONTACT INFORMATION:
-                Website: www.cac.gov.ng
-                Email: info@cac.gov.ng
-                Phone: 0700-CALL-CAC (0700-2255-222)
-                Address: Plot 420, Tigris Crescent, Maitama, Abuja
-                """,
-                metadata={"source": "CAC Official Registration Guide 2024"}
-            ),
-            
-            Document(
-                page_content="""
-                FEDERAL INLAND REVENUE SERVICE (FIRS) TAX OBLIGATIONS
-                
-                FIRS Location: 15 Sokode Crescent, Wuse Zone 5, Abuja
-                
-                COMPANY INCOME TAX (CIT) RATES 2024:
-                - Small Companies (turnover ≤ ₦25 million): 20%
-                - Medium Companies (₦25M - ₦100M): 20%
-                - Large Companies (> ₦100 million): 30%
-                - Minimum Tax: 0.5% of turnover when no assessable profit
-                
-                VALUE ADDED TAX (VAT):
-                - Current Rate: 7.5%
-                - Registration Threshold: ₦25,000,000 annual turnover
-                - Exempt items: Basic food items, medical services, educational services
-                - Zero-rated: Exports, goods/services in free trade zones
-                
-                PAY AS YOU EARN (PAYE) TAX BANDS:
-                - First ₦300,000 annually: 7%
-                - Next ₦300,000: 11% 
-                - Next ₦500,000: 15%
-                - Next ₦500,000: 19%
-                - Next ₦1,600,000: 21%
-                - Above ₦3,200,000: 24%
-                - Personal Relief Allowance: ₦200,000
-                
-                FILING DEADLINES:
-                - CIT Annual Returns: March 31st
-                - VAT Monthly Returns: 21st of following month
-                - WHT Monthly Returns: 21st of following month
-                - PAYE Monthly Returns: 10th of following month
-                
-                PENALTIES FOR LATE FILING:
-                - CIT: 5% of tax payable + ₦25,000
-                - VAT: 5% per month of tax due
-                - PAYE: 10% of tax due + ₦25,000
-                
-                FIRS CONTACT:
-                Website: www.firs.gov.ng
-                Email: contact@firs.gov.ng  
-                Phone: 0700-CALL-FIRS (0700-2255-3477)
-                """,
-                metadata={"source": "FIRS Tax Guidelines 2024"}
-            ),
-            
-            Document(
-                page_content="""
-                CORPORATE BANKING REQUIREMENTS IN NIGERIA
-                
-                Central Bank of Nigeria (CBN) regulated banks for corporate accounts:
-                
-                TIER 1 BANKS MINIMUM OPENING BALANCE:
-                - Access Bank: ₦100,000
-                - Guaranty Trust Bank (GTBank): ₦100,000
-                - First Bank of Nigeria: ₦50,000
-                - United Bank for Africa (UBA): ₦100,000
-                - Zenith Bank: ₦100,000
-                - Ecobank Nigeria: ₦100,000
-                
-                REQUIRED DOCUMENTS FOR ACCOUNT OPENING:
-                1. Certificate of Incorporation (CAC)
-                2. Memorandum & Articles of Association (Form CAC 2)
-                3. Form CAC 7 (Directors' Particulars)
-                4. Board Resolution authorizing account opening
-                5. Tax Identification Number (TIN) Certificate
-                6. Valid ID of all directors and signatories
-                7. Utility bills for business address
-                8. Business permit/license (where applicable)
-                9. Two passport photographs of signatories
-                
-                ACCOUNT TYPES AVAILABLE:
-                1. Current Account - for daily business operations
-                2. Savings Account - for business reserves
-                3. Fixed Deposit Account - for investments
-                4. Domiciliary Account - for foreign currency transactions
-                
-                ACCOUNT CHARGES (Average):
-                - Account maintenance: ₦1,000 - ₦5,000 monthly
-                - SMS alerts: ₦4 per SMS
-                - Inter-bank transfers: ₦50 - ₦100
-                - Internet banking: Free - ₦1,000 monthly
-                
-                PROCESSING TIME:
-                - Documentation review: 2-3 days
-                - Account activation: 5-10 working days
-                - Debit card issuance: 7-14 days
-                
-                CBN CONTACT:
-                Website: www.cbn.gov.ng
-                Phone: +234-9-4612305
-                Address: Central Bank of Nigeria, Central Business District, Abuja
-                """,
-                metadata={"source": "CBN Banking Guidelines 2024"}
-            ),
-            
-            Document(
-                page_content="""
-                BUSINESS PERMITS AND LICENSES IN NIGERIA
-                
-                FEDERAL LEVEL PERMITS:
-                
-                1. NAFDAC REGISTRATION (Food, Drugs, Cosmetics):
-                - Application fee: ₦100,000 - ₦500,000
-                - Processing time: 90 days
-                - Renewal: Every 5 years
-                - Contact: www.nafdac.gov.ng
-                
-                2. SON STANDARDS (Manufacturing):
-                - Mandatory Conformity Assessment Programme (MANCAP)
-                - Fee: ₦50,000 - ₦200,000
-                - Contact: www.son.gov.ng
-                
-                3. NBC LICENSE (Broadcasting):
-                - Radio license: ₦10,000,000
-                - TV license: ₦15,000,000
-                - Contact: www.nbc.gov.ng
-                
-                STATE LEVEL PERMITS:
-                
-                1. Business Premises Permit:
-                - Lagos: ₦25,000 - ₦100,000
-                - Abuja: ₦20,000 - ₦80,000
-                - Rivers: ₦15,000 - ₦60,000
-                
-                2. Signage Permit:
-                - Lagos: ₦50,000 - ₦200,000
-                - Abuja: ₦30,000 - ₦150,000
-                
-                SECTOR-SPECIFIC LICENSES:
-                
-                1. Oil & Gas: Department of Petroleum Resources (DPR)
-                2. Banking: Central Bank of Nigeria (CBN)
-                3. Insurance: National Insurance Commission (NAICOM)
-                4. Telecom: Nigerian Communications Commission (NCC)
-                5. Aviation: Nigerian Civil Aviation Authority (NCAA)
-                
-                PROCESSING TIPS:
-                - Apply online where possible for faster processing
-                - Ensure all documents are properly certified
-                - Follow up regularly on application status
-                - Budget for renewal fees in business planning
-                """,
-                metadata={"source": "Business Licensing Guide Nigeria 2024"}
-            )
-        ]

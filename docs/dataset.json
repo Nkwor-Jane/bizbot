@@ -418,5 +418,67 @@
     "question": "How can a caterer register a business in Nigeria?",
     "answer": "As a caterer, you can register as a Business Name (sole proprietor) with CAC. You will need: valid ID, passport photo, business name, and ₦10,000 for registration. After registration, apply for FIRS TIN, and obtain a food handling permit from NAFDAC or your local government.",
     "source": "CAC & NAFDAC Guidelines 2024"
+    },
+    {
+        "question": "How do I register a business with CAC?",
+        "answer": "Step 1: Reserve a business name on the CAC portal (₦500).\nStep 2: Prepare required documents – CAC 2.1, CAC 7, valid ID, proof of address, passport photo.\nStep 3: Pay registration fees – Business Name (₦10,000), Ltd (₦15,000), Plc (₦50,000).\nStep 4: Submit online or at CAC office. Processing time: 3–5 working days.",
+        "source": "CAC Official Registration Guide 2024"
+    },
+    {
+        "question": "What documents are required for CAC registration?",
+        "answer": "Required documents:\n- CAC 2.1 (Memorandum & Articles)\n- CAC 7 (Particulars of Directors)\n- Valid ID & proof of address of shareholders/directors\n- Passport photographs\n- Evidence of share capital payment (if applicable).",
+        "source": "CAC Official Registration Guide 2024"
+    },
+    {
+        "question": "What are the FIRS company income tax rates?",
+        "answer": "Small companies (≤ ₦25M turnover): 20%.\nMedium companies (₦25M–₦100M): 20%.\nLarge companies (> ₦100M): 30%.\nMinimum tax: 0.5% of turnover if no assessable profit.",
+        "source": "FIRS Tax Guidelines 2024"
+    },
+    {
+        "question": "What is the VAT rate in Nigeria?",
+        "answer": "The VAT rate is 7.5%. Businesses with annual turnover above ₦25M must register for VAT.\nExempt items: basic food, medical, educational services. Zero-rated: exports and free trade zones.",
+        "source": "FIRS VAT Guide 2024"
+    },
+    {
+        "question": "What do I need to open a corporate bank account in Nigeria?",
+        "answer": "Requirements:\n- CAC Certificate of Incorporation\n- Memorandum & Articles (CAC 2)\n- CAC 7 (Directors)\n- Board resolution authorizing account\n- Tax Identification Number (TIN)\n- Valid IDs & utility bills of signatories\n- Business license (if applicable).",
+        "source": "CBN Banking Guidelines 2024"
+    },
+    {
+        "question": "What licenses or permits do businesses need in Nigeria?",
+        "answer": "Federal examples:\n- NAFDAC registration for food/drugs (₦100k–₦500k)\n- SON conformity for manufacturers\n- NBC license for broadcasting\n\nState examples:\n- Business premises permit (₦20k–₦100k)\n- Signage permit (₦30k–₦200k)",
+        "source": "Business Licensing Guide Nigeria 2024"
+    },
+    {
+        "question": "How do I register a food business in Nigeria?",
+        "answer": "To register a food business (catering, restaurant, chef):\n1. Register a Business Name or Limited Company with CAC.\n2. Obtain a Business Premises Permit from your state.\n3. Register with FIRS for TIN and VAT (if turnover > ₦25M).\n4. Apply for NAFDAC registration if processing/selling food.\n5. Open a corporate bank account with your CAC certificate and TIN.",
+        "source": "CAC & NAFDAC Guidelines 2024"
+    },
+    {
+        "question": "How do I register a sole proprietorship in Nigeria?",
+        "answer": "To register a sole proprietorship (business name):\n1. Apply for Business Name registration on CAC portal.\n2. Submit ID, passport photo, and business address.\n3. Pay ₦10,000 registration fee.\n4. Processing time: 2–3 working days.",
+        "source": "CAC Business Name Guide 2024"
+    },
+    {
+        "question": "How do I register a non-profit organization in Nigeria?",
+        "answer": "To register an NGO (incorporated trustees):\n1. Reserve a name with CAC.\n2. Draft a constitution and trustees’ details.\n3. Publish notices in 2 newspapers (28 days).\n4. Submit application with trustee IDs, passports, and constitution.\n5. Pay ₦25,000+ depending on type.\n6. Processing time: 4–8 weeks.",
+        "source": "CAC Incorporated Trustees Guidelines 2024"
+    },
+    {
+        "question": "How do I register an agriculture business in Nigeria?",
+        "answer": "Steps for farmers/agriculture businesses:\n1. Register with CAC as a Business Name or Company.\n2. Obtain Business Premises Permit from local government.\n3. Register with FIRS for TIN and PAYE if employing staff.\n4. Apply for SON/NAFDAC permits if processing/exporting.\n5. Access funding via Bank of Agriculture or CBN schemes.",
+        "source": "Federal Ministry of Agriculture Guidelines 2024"
+    },
+    {
+        "question": "How do I register an import/export business in Nigeria?",
+        "answer": "To start an import/export business:\n1. Incorporate a company with CAC.\n2. Obtain TIN from FIRS.\n3. Register with Nigeria Customs Service.\n4. Apply for NEPC export license (for exporters).\n5. Open a domiciliary account with a Nigerian bank.",
+        "source": "Nigeria Customs & NEPC Guidelines 2024"
+    },
+    {
+        "question": "How do I register a retail business in Nigeria?",
+        "answer": "Steps for a retail/trading business:\n1. Register as a Business Name or Company with CAC.\n2. Obtain Business Premises Permit from your state.\n3. Register with FIRS for TIN and VAT.\n4. Get signage permit for store advertising.\n5. Open a corporate bank account.",
+        "source": "CAC & State Business Permits 2024"
     }
 ]
+
+        
