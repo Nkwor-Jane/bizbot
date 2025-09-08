@@ -38,7 +38,7 @@ An AI chatbot that:
 ## 🛠️ Tech Stack
 
 - **Backend**: FastAPI, Python
-- **Frontend**: NextJS, JavaScript
+- **Frontend**: Next.js 15, TypeScript
 - **AI Framework**: LangChain, Nebius AI Studio
 - **Vector Database**: FAISS
 - **LLM**: Meta-Llama-3.1-8B

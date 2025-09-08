@@ -55,12 +55,33 @@ def safe_translate(text: str, source_lang: str = "auto", target_lang: str = "en"
         logger.error(f"Translation failed from {source_lang} to {target_lang}: {e}")
         return text
 
+
 def safe_translate_to_english(text: str) -> str:
+    """
+    Translate only if the text is in Igbo, Yoruba, Hausa, or Pidgin.
+    Otherwise return the original text unchanged.
+    """
     try:
         detected_lang = detect(text)
-        if detected_lang == "en":
-            return text  # skip translation if already English
-        return GoogleTranslator(source="auto", target="en").translate(text)
+        logger.info(f"Detected language: {detected_lang}")
+
+        # Map Nigerian languages to codes GoogleTranslator can handle
+        nigerian_langs = {
+            "ig": "ig",   # Igbo
+            "yo": "yo",   # Yoruba
+            "ha": "ha",   # Hausa
+            "pcm": "en"   # Pidgin is not supported → treat as English directly
+        }
+
+        if detected_lang in nigerian_langs:
+            # Only translate if not pidgin (pidgin treated as English)
+            if detected_lang == "pcm":
+                return text
+            return GoogleTranslator(source=nigerian_langs[detected_lang], target="en").translate(text)
+
+        # If English or anything else, don’t translate
+        return text
+
     except Exception as e:
         logger.error(f"Translation failed: {e}")
         return text
