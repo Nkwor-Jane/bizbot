@@ -2,24 +2,24 @@ import os
 import time
 import logging
 import re
-
+from pydantic import SecretStr
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
 import json
-import pymupdf
+# import pymupdf
 
 
 # LangChain imports
 from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain_community.callbacks.manager import get_openai_callback
 from langchain.embeddings.base import Embeddings
+from langchain_classic.chains import RetrievalQA
 from openai import OpenAI
 from langchain_community.document_loaders import PyPDFLoader, PyMuPDFLoader, PDFMinerLoader
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 load_dotenv()
 
@@ -27,52 +27,52 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class ImprovedPDFLoader:
-    """Enhanced PDF loader with multiple fallback options"""
+# class ImprovedPDFLoader:
+#     """Enhanced PDF loader with multiple fallback options"""
     
-    @staticmethod
-    def load_pdf(file_path: str, preferred_method: str = "pymupdf"):
-        """
-        Load PDF with multiple fallback methods
+#     @staticmethod
+#     def load_pdf(file_path: str, preferred_method: str = "pymupdf"):
+#         """
+#         Load PDF with multiple fallback methods
         
-        Args:
-            file_path: Path to the PDF file
-            preferred_method: 'pymupdf', 'pypdf', or 'pdfminer'
-        """
-        if not os.path.exists(file_path):
-            logger.error(f"PDF file not found: {file_path}")
-            return []
+#         Args:
+#             file_path: Path to the PDF file
+#             preferred_method: 'pymupdf', 'pypdf', or 'pdfminer'
+#         """
+#         if not os.path.exists(file_path):
+#             logger.error(f"PDF file not found: {file_path}")
+#             return []
         
-        methods = {
-            'pymupdf': lambda: PyMuPDFLoader(file_path).load(),
-            'pypdf': lambda: PyPDFLoader(file_path).load(),
-            'pdfminer': lambda: PDFMinerLoader(file_path).load()
-        }
+#         methods = {
+#             'pymupdf': lambda: PyMuPDFLoader(file_path).load(),
+#             'pypdf': lambda: PyPDFLoader(file_path).load(),
+#             'pdfminer': lambda: PDFMinerLoader(file_path).load()
+#         }
         
-        # Try preferred method first
-        try:
-            logger.info(f"Loading PDF using {preferred_method}")
-            documents = methods[preferred_method]()
-            logger.info(f"Successfully loaded {len(documents)} pages with {preferred_method}")
-            return documents
-        except Exception as e:
-            logger.warning(f"{preferred_method} failed: {e}")
+#         # Try preferred method first
+#         try:
+#             logger.info(f"Loading PDF using {preferred_method}")
+#             documents = methods[preferred_method]()
+#             logger.info(f"Successfully loaded {len(documents)} pages with {preferred_method}")
+#             return documents
+#         except Exception as e:
+#             logger.warning(f"{preferred_method} failed: {e}")
         
-        # Try fallback methods
-        for method_name, method_func in methods.items():
-            if method_name == preferred_method:
-                continue
+#         # Try fallback methods
+#         for method_name, method_func in methods.items():
+#             if method_name == preferred_method:
+#                 continue
                 
-            try:
-                logger.info(f"Trying fallback method: {method_name}")
-                documents = method_func()
-                logger.info(f"Successfully loaded {len(documents)} pages with {method_name}")
-                return documents
-            except Exception as e:
-                logger.warning(f"{method_name} failed: {e}")
+#             try:
+#                 logger.info(f"Trying fallback method: {method_name}")
+#                 documents = method_func()
+#                 logger.info(f"Successfully loaded {len(documents)} pages with {method_name}")
+#                 return documents
+#             except Exception as e:
+#                 logger.warning(f"{method_name} failed: {e}")
         
-        logger.error("All PDF loading methods failed")
-        return []
+#         logger.error("All PDF loading methods failed")
+#         return []
 
 class JSONLoader:
     """Load structured Q&A pairs from JSON into LangChain Documents"""
@@ -207,13 +207,9 @@ class RAGPipeline:
         self.llm = ChatOpenAI(
             model="meta-llama/Meta-Llama-3.1-8B-Instruct",
             temperature=0.1,
-            max_tokens=512,
-            top_p=0.9,
-            frequency_penalty=0.1,
-            openai_api_key=self.api_key,
-            openai_api_base="https://api.studio.nebius.com/v1/",
-            request_timeout=30,
-            max_retries=3
+            api_key=SecretStr(self.api_key),
+            base_url="https://api.studio.nebius.com/v1/",
+            max_retries=3,
         )
         
         self.vector_store = None
@@ -324,9 +320,9 @@ Question: {question}
                 self.kb_type = "json"
                 # Build direct lookup for JSON data
                 self._build_qa_lookup(documents)
-            elif documents_path.endswith(".pdf"):
-                documents = ImprovedPDFLoader.load_pdf(documents_path, preferred_method="pymupdf")
-                self.kb_type = "pdf"
+            # elif documents_path.endswith(".pdf"):
+            #     documents = ImprovedPDFLoader.load_pdf(documents_path, preferred_method="pymupdf")
+            #     self.kb_type = "pdf"
             else:
                 raise ValueError("Unsupported file type. Use .pdf or .json")
 
@@ -430,7 +426,7 @@ Question: {question}
             "match_type": "agent_specific"
         }
 
-    def _exact_match_lookup(self, question: str) -> Dict:
+    def _exact_match_lookup(self, question: str) -> Optional[Dict]:
         """Try to find exact matches in the Q&A lookup"""
         question_clean = question.lower().strip()
 

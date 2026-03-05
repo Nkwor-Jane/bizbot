@@ -2,20 +2,23 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.sql import func
-from typing import Generator
+from typing import Generator, Optional
 import os
 import json
 from dotenv import load_dotenv
 
 load_dotenv()
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+SQLALCHEMY_DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
+
+if not SQLALCHEMY_DATABASE_URL:
+    raise ValueError("SUPABASE_DATABASE_URL environment variable is not set")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, 
     echo=True,
-    connect_args={"sslmode": "require"} 
+    connect_args={"sslmode": "require"}
 )
-
+print("Connected successfully!")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
@@ -112,7 +115,7 @@ class ChatDatabase:
             return []
     
     def save_conversation(self, session_id: str, user_message: str, bot_response: str, 
-                         confidence_score: str = None, sources_used = None):
+                         confidence_score: Optional[str] = None, sources_used = None):
         """Save a conversation to the database"""
         db = self.SessionLocal()
         try:
@@ -168,7 +171,7 @@ class ChatDatabase:
         finally:
             db.close()
     
-    def save_feedback(self, session_id: str, message_id: int, feedback_type: str, feedback_text: str = None):
+    def save_feedback(self, session_id: str, message_id: int, feedback_type: str, feedback_text: Optional[str] = None):
         """Save user feedback"""
         db = self.SessionLocal()
         try:

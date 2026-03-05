@@ -107,6 +107,7 @@ def normalize_sources(sources):
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
+    detected_lang = "en"
     try:
         logger.info(f"Incoming request: {request.dict()}")
 
@@ -130,7 +131,8 @@ async def chat_endpoint(request: ChatRequest):
         if isinstance(result, dict):
             answer = result.get("answer", "").strip()
             sources = normalize_sources(result.get("sources", []))
-            confidence = result.get("confidence_score")
+            # confidence = result.get("confidence_score")
+            confidence = str(result.get("confidence_score", "0"))
         else:
             answer, sources, confidence = str(result), [], None
 

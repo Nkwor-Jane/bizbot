@@ -103,7 +103,7 @@ An AI chatbot that:
 
    ```bash
     SUPABASE_DATABASE_PASSWORD=********
-    DATABASE_URL=postgresql://postgres**********************
+    SUPABASE_DATABASE_URL=postgresql://postgres**********************
     OPEN_API_KEY= *********************
 
 5. Run the server:
