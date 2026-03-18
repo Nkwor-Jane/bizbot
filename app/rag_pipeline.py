@@ -91,7 +91,7 @@ class JSONLoader:
             for i, item in enumerate(data):
                 question = item.get("question", "").strip()
                 answer = item.get("answer", "").strip()
-                source = item.get("source", "Nigerian Business Dataset")
+                source = item.get("source") or "Nigerian Business Dataset"
 
                 # Create separate documents for better retrieval
                 # Document 1: Question-focused for better matching
@@ -462,13 +462,49 @@ Question: {question}
                 "match_type": "exact_no_punct"
             }
         
+        # add a scored loop and pick the BEST match, not the first one above threshold
+
+        best_match = None
+        best_score = 0
+
+        stop_words = {
+            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 
+            'of', 'with', 'by', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 
+            'can', 'could', 'should', 'would', 'will', 'shall', 'may', 'might', 
+            'must', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'my', 'your', 
+            'his', 'her', 'our', 'their'
+        }
+        for stored_question, result in self.qa_lookup.items():
+            question_words = set(question_no_punct.split()) - stop_words
+            stored_words = set(stored_question.split()) - stop_words
+
+            overlap = len(question_words.intersection(stored_words))
+            total_words = len(question_words.union(stored_words))
+            
+            if total_words > 0:
+                similarity = overlap / total_words
+                if similarity > best_score:
+                    best_score = similarity
+                    best_match = result
+
+        if best_match and best_score > 0.6:
+            return {
+                "answer": best_match["answer"],
+                "sources": [{"source": best_match["source"] or "Nigerian Business Dataset", "excerpt": ""}],
+                "confidence": "high",
+                "confidence_score": round(best_score, 2),
+                "cost": 0.0,
+                "response_time": 0.01,
+                "match_type": f"fuzzy_best_{best_score:.2f}"
+            }
+
         # Try fuzzy matching for similar questions
         for stored_question, result in self.qa_lookup.items():
             # Simple word overlap check
             question_words = set(question_no_punct.split())
             stored_words = set(stored_question.split())
             # Remove common stop words for better matching
-            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'can', 'could', 'should', 'would', 'will', 'shall', 'may', 'might', 'must', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'my', 'your', 'his', 'her', 'our', 'their'}
+            # stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'can', 'could', 'should', 'would', 'will', 'shall', 'may', 'might', 'must', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'my', 'your', 'his', 'her', 'our', 'their'}
 
             question_words = question_words - stop_words
             stored_words = stored_words - stop_words
@@ -651,9 +687,11 @@ What business question can I help you with today?"""
                         
                         # Try to extract clean answer
                         if "A: " in content:
-                            answer = content  .split("A: ", 1)[1].strip()
+                            parts = content.split("A: ", 1)
+                            answer = parts[1].strip() if len(parts) > 1 else content.strip()
                         elif "Answer: " in content:
-                            answer = content.split("Answer: ", 1)[1].strip()
+                            parts = content.split("Answer: ", 1)
+                            answer = parts[1].strip() if len(parts) > 1 else content.strip()
                             if "\nRelated Question:" in answer:
                                 answer = answer.split("\nRelated Question:")[0].strip()
                         else:
